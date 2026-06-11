@@ -16,30 +16,11 @@ decoupled architecture:
 
 | Template | Origin | Description |
 |----------|--------|-------------|
-| [`simple`](templates/simple) | Original design | Clean, minimalist UI. No images beyond the aMule logo (inline SVG icons), light + dark theme, responsive (desktop → phone), live polling. |
-| [`amule-default`](templates/amule-default) | Migrated from aMule's stock [`default`](https://github.com/amule-project/amule/tree/master/src/webserver/default) template | Faithful reproduction of the classic look, rebuilt on the same API; light mobile support. |
+| [`simple`](templates/simple) | Original design | Clean, minimalist UI; light + dark theme, responsive. |
+| [`amule-default`](templates/amule-default) | Migrated from aMule's stock [`default`](https://github.com/amule-project/amule/tree/master/src/webserver/default) template | Faithful reproduction of the classic look; light mobile support. |
 
-![simple](docs/screenshots/simple-transfers.png)
-
-![amule-default](docs/screenshots/amule-default-transfers.png)
-
-More screenshots in [docs/screenshots](docs/screenshots).
-
-## Features (template `simple`)
-
-* Transfers: chunk-level progress bars, pause / resume / cancel / priority,
-  status & category filters, add ed2k links, totals.
-* Search (local / global / Kad) with size & availability filters; queue
-  results into any category.
-* Shared files: reload, priorities, transfer statistics.
-* Servers: connect / remove / add, live user & file counts.
-* Kad: connect / disconnect / bootstrap, nodes.dat update, nodes graph.
-* Statistics: aMule's own speed & connection graphs plus the full collapsible
-  statistics tree.
-* Settings: bandwidth limits, connection, ports, files, web server.
-* Log & server info, with reset.
-* Auto-refresh with a single serialized request queue (amuleweb is
-  single-threaded), mobile navigation, automatic dark mode.
+Each template's README documents its features and embeds its screenshots;
+the images live under [`docs/screenshots/<template>/`](docs/screenshots).
 
 ## Compatibility
 
