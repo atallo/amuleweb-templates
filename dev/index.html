@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<!--
+  SPDX-License-Identifier: GPL-3.0-or-later
+  Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+-->
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="color-scheme" content="light dark" />
+	<title>aMule — mock preview (dev)</title>
+	<link rel="icon" href="../templates/simple/favicon.ico" />
+	<link id="tpl-css" rel="stylesheet" href="../templates/simple/app.css" />
+</head>
+<body>
+	<div id="app">
+		<div id="boot" style="padding:48px;text-align:center;color:#888;font-family:sans-serif">Loading mock preview…</div>
+	</div>
+	<!--
+		Dev-only preview: loads canned data (mock.js), then the real SPA of a
+		template. Serve the REPOSITORY ROOT with any static server and open
+		this folder:
+
+		    python3 -m http.server 8080
+		    →  http://localhost:8080/dev/
+
+		Pick a template with ?template=<name> (default: simple), e.g.
+		    http://localhost:8080/dev/?template=simple#stats
+
+		The template's own module resolution works because download-deps
+		mirrors the Preact+HTM module into each template directory.
+	-->
+	<script type="module">
+		const tpl = new URLSearchParams(location.search).get('template') || 'simple';
+		document.getElementById('tpl-css').href = `../templates/${tpl}/app.css`;
+		await import('./mock.js');
+		await import(`../templates/${tpl}/app.js`);
+	</script>
+</body>
+</html>

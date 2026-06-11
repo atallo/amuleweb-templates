@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!--
+  SPDX-License-Identifier: GPL-3.0-or-later
+  Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+
+  This program is free software: you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as published by the
+  Free Software Foundation, either version 3 of the License, or (at your
+  option) any later version. See the LICENSE file for details.
+-->
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="color-scheme" content="light dark" />
+	<title>aMule Web Control</title>
+	<link rel="icon" href="favicon.ico" />
+	<link rel="stylesheet" href="app.css" />
+</head>
+<body>
+	<div id="app">
+		<!-- Replaced once the SPA mounts. Visible if JS is disabled or the
+		     Preact+HTM module has not been downloaded yet (see download-deps). -->
+		<div id="boot" style="padding:48px;text-align:center;color:#888;font-family:sans-serif">
+			<noscript>This control panel requires JavaScript.</noscript>
+			<span id="boot-msg">Loading…</span>
+		</div>
+	</div>
+
+	<script type="module">
+		import('./app.js').catch((err) => {
+			const el = document.getElementById('boot-msg');
+			if (el) {
+				el.innerHTML =
+					'Could not start the control panel.<br><br><code>' +
+					(err && err.message ? err.message : err) + '</code><br><br>' +
+					'The Preact+HTM module may be missing — run the dependency ' +
+					'download script (see dev/).';
+			}
+		});
+	</script>
+</body>
+</html>
