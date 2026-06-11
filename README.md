@@ -42,6 +42,12 @@ More screenshots in [docs/screenshots](docs/screenshots).
 * Auto-refresh with a single serialized request queue (amuleweb is
   single-threaded), mobile navigation, automatic dark mode.
 
+## Compatibility
+
+Tested with **aMule 3.0** running in ngosang's fantastic
+[docker-amule](https://github.com/ngosang/docker-amule) container. Any
+reasonably recent amuleweb build should work the same way.
+
 ## Installation
 
 ### From a release zip
@@ -81,6 +87,22 @@ sh scripts/build.sh          # assembles flat template dirs under ./dist
 (Windows: `dev\download-deps.ps1` and `scripts\build.ps1`.)
 
 Then install `dist/<name>` as in the previous section.
+
+## HTTPS and PWA (recommended)
+
+amuleweb only speaks plain HTTP. Putting it behind a reverse proxy that
+terminates **HTTPS** (Caddy, nginx, Traefik, …) is recommended: you get
+TLS for your password, and — since both templates ship a web manifest —
+a secure origin lets you **install the interface as a PWA** on your phone
+or desktop (add to home screen) for an app-like, full-screen experience.
+
+Minimal Caddy example:
+
+```caddyfile
+amule.example.com {
+    reverse_proxy 192.168.1.10:4711
+}
+```
 
 ## How it works
 
@@ -135,7 +157,11 @@ Run `dev/download-deps.*` first so each template has its JS runtime.
 
 Pushing a tag like `v1.2.0` triggers the
 [release workflow](.github/workflows/release.yml), which builds every
-template and attaches one installable zip per template to the GitHub release:
+template and attaches to the GitHub release:
+
+* `amuleweb-template-<name>-vX.Y.Z.zip` — one zip per template, if you are
+  only interested in a single skin;
+* `amuleweb-templates-bundle-vX.Y.Z.zip` — every template in one file.
 
 ```sh
 git tag v1.2.0

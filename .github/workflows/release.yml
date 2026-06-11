@@ -2,8 +2,9 @@
 # Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
 #
 # When a version tag (v*) is pushed, assemble every template into a flat,
-# ready-to-install directory and publish one zip per template as release
-# assets.
+# ready-to-install directory and publish the release assets: one zip per
+# template (so nobody has to download everything for a single skin) plus a
+# bundle zip containing all of them.
 
 name: Release
 
@@ -31,10 +32,14 @@ jobs:
       - name: Package zips
         run: |
           cd dist
+          # one zip per template...
           for d in */ ; do
             n="${d%/}"
             zip -qr "amuleweb-template-${n}-${GITHUB_REF_NAME}.zip" "$n"
           done
+          # ...and a bundle with every template (directories only, so the
+          # per-template zips created above are not re-packed)
+          zip -qr "amuleweb-templates-bundle-${GITHUB_REF_NAME}.zip" ./*/
           ls -l ./*.zip
 
       - name: Create GitHub release
