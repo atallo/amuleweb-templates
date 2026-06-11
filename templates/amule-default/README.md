@@ -10,7 +10,9 @@ page and number formats — rebuilt as a single-page app on the shared JSON
 layer ([`common/api.php`](../../common/api.php)) instead of server-side
 rendering.
 
-![amule-default](../../docs/screenshots/amule-default-transfers.png)
+![amule-default](../../docs/screenshots/amule-default/transfers.png)
+
+There is also a [mobile screenshot](../../docs/screenshots/amule-default/mobile.png).
 
 Differences from the original (all behavior-preserving):
 
