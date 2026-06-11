@@ -34,7 +34,17 @@
 		const tpl = new URLSearchParams(location.search).get('template') || 'simple';
 		// Dev-only cache buster so edits show up on plain reload.
 		const v = Date.now();
-		document.getElementById('tpl-css').href = `../templates/${tpl}/app.css?v=${v}`;
+		// Load the same stylesheets, in the same order, that the template's
+		// real shell declares — works for any template without hardcoding.
+		const shell = await (await fetch(`../templates/${tpl}/index.html?v=${v}`)).text();
+		const hrefs = [...shell.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map((m) => m[1]);
+		for (const href of (hrefs.length ? hrefs : ['app.css'])) {
+			const l = document.createElement('link');
+			l.rel = 'stylesheet';
+			l.href = `../templates/${tpl}/${href}?v=${v}`;
+			document.head.appendChild(l);
+		}
+		document.getElementById('tpl-css').remove();
 		await import('./mock.js');
 		await import(`../templates/${tpl}/app.js?v=${v}`);
 	</script>

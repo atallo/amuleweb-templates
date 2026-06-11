@@ -1,0 +1,13 @@
+{
+	"name": "aMule WebUI",
+	"short_name": "aMule",
+	"description": "aMule web interface (Reloaded Material template)",
+	"start_url": "./",
+	"scope": "./",
+	"display": "standalone",
+	"background_color": "#39425f",
+	"theme_color": "#2f303d",
+	"icons": [
+		{ "src": "logo.png", "sizes": "any", "type": "image/png", "purpose": "any" }
+	]
+}

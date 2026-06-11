@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--
+  SPDX-License-Identifier: GPL-3.0-or-later
+  Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+-->
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="theme-color" content="#2f303d" />
+	<title>aMule - Control Panel</title>
+	<link rel="icon" href="favicon.ico" />
+	<link rel="manifest" href="manifest.json" />
+	<link rel="stylesheet" href="bootstrap.min.css" />
+	<link rel="stylesheet" href="bootstrap-theme.min.css" />
+	<link rel="stylesheet" href="app.css" />
+</head>
+<body class="animated fadeIn">
+	<div id="app">
+		<div id="boot" style="padding:80px 20px;text-align:center;color:#cfd8dc;font-family:Helvetica,Arial,sans-serif">
+			<noscript>This control panel requires JavaScript.</noscript>
+			<span id="boot-msg">Loading…</span>
+		</div>
+	</div>
+	<script type="module">
+		import('./app.js').catch((err) => {
+			const el = document.getElementById('boot-msg');
+			if (el) {
+				el.innerHTML =
+					'Could not start the control panel.<br><br><code>' +
+					(err && err.message ? err.message : err) + '</code><br><br>' +
+					'The Preact+HTM module may be missing — run the dependency ' +
+					'download script (see the repository dev/ folder).';
+			}
+		});
+	</script>
+</body>
+</html>
