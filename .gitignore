@@ -1,0 +1,6 @@
+# Build output (scripts/build.*)
+/dist/
+
+# Downloaded front-end runtime (dev/download-deps.*)
+/vendor/
+templates/*/preact-htm-standalone.module.js

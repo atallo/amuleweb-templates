@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+#
+# When a version tag (v*) is pushed, assemble every template into a flat,
+# ready-to-install directory and publish one zip per template as release
+# assets.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Fetch front-end dependency
+        run: sh dev/download-deps.sh
+
+      - name: Assemble templates
+        run: sh scripts/build.sh
+
+      - name: Package zips
+        run: |
+          cd dist
+          for d in */ ; do
+            n="${d%/}"
+            zip -qr "amuleweb-template-${n}-${GITHUB_REF_NAME}.zip" "$n"
+          done
+          ls -l ./*.zip
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/*.zip \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes
