@@ -1,0 +1,250 @@
+/*
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+ *
+ * app.css -- "reloaded": styles consolidated from the inline
+ * <style> blocks of AmuleWebUI-Reloaded (Material theme by MatteoRagni /
+ * Brax, GPL-3.0), loaded on top of the bundled Bootstrap 3 CSS. Everything
+ * is self-hosted: no CDNs, no jQuery (interactions live in app.js), and the
+ * Glyphicons webfont is replaced by inline SVG equivalents (amuleweb cannot
+ * serve font files). A few rules at the end improve phones without touching
+ * the desktop look.
+ */
+
+/* fadeIn / rubberBand (the two animate.css effects the original uses) */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.animated.fadeIn { animation: fadeIn 1.5s; }
+@keyframes rubberBand {
+	0% { transform: scale3d(1, 1, 1); }
+	30% { transform: scale3d(1.25, 0.75, 1); }
+	40% { transform: scale3d(0.75, 1.25, 1); }
+	50% { transform: scale3d(1.15, 0.85, 1); }
+	65% { transform: scale3d(0.95, 1.05, 1); }
+	75% { transform: scale3d(1.05, 0.95, 1); }
+	100% { transform: scale3d(1, 1, 1); }
+}
+.animated.rubberBand { animation: rubberBand 1s; }
+
+/* navigation bar */
+body {
+	padding-top: 60px;
+	background-color: #39425f;
+}
+.logo-nav { height: 40px; width: 40px; }
+.navbar-brand { padding-top: 5px; }
+.navbar-link:hover { color: white !important; }
+
+/* tasks panel */
+.panel-tasks {
+	width: 95%;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #2F303D;
+}
+.panel-center { text-align: center; margin: auto; }
+.form-tasks .btn:hover { color: white !important; }
+#filter {
+	width: 125px; height: 28px;
+	border-top-right-radius: 0px; border-bottom-right-radius: 0px;
+}
+#category { width: 125px; height: 28px; border-radius: 0px; }
+.btn-filter { border-top-left-radius: 0px; border-bottom-left-radius: 0px; }
+.form-inline { margin-top: 1px; margin-bottom: 1px; }
+
+/* tables wrapper */
+.panel-tr {
+	width: 95%;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+}
+
+/* Brax AmuleWebUI Material theme */
+.navbar { background-color: #2f303d; }
+.label-success { background-color: #319a9b; }
+.label-default { background-color: #ffffff; color: #319a9b; }
+.panel { background-color: #39425f; border: 0; }
+.panel-heading { background-color: #319a9b; border: 0; }
+.form-control { border: 0; }
+.table > thead > tr > th, .table > thead > tr > td { border: 1; }
+.gi { color: #319a9b; }
+.btn:hover .gi { color: #fff; }
+a:hover { color: #fff; }
+a { color: #4db6ac; }
+h4 { color: #cfd8dc; }
+b:hover { color: #319a9b; }
+b { color: #cfd8dc; }
+th { color: #4db6ac; }
+.texte {
+	font-family: Helvetica;
+	font-size: 12px;
+	font-weight: normal;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	word-break: break-all;
+	word-wrap: break-word;
+}
+.texte-full-name { max-width: 0; width: 45%; }
+.texte-full-name-upload { width: 55%; }
+.progress-bar-complex > img {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	height: 4px !important;
+	width: 100%;
+	display: block;
+}
+.progress {
+	height: 16px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+	margin: 0;
+}
+.label { line-height: inherit; }
+
+/* footer */
+#footer {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	height: auto;
+	background-color: #2f303d;
+	z-index: 20;
+}
+#ed2klink { margin-right: 5px; width: 140px; }
+#selectcat { border-radius: 0px; width: 100px; }
+#formed2link { margin: 5px; }
+
+/* ------------------------------------------------------------------ */
+/* SVG icon replacement for the Glyphicons webfont                     */
+/* ------------------------------------------------------------------ */
+.gi {
+	display: inline-block;
+	width: 14px; height: 14px;
+	fill: currentColor;
+	vertical-align: middle;
+}
+.gi-lg { width: 18px; height: 18px; }
+.navbar-link .gi, .form-tasks .gi { width: 16px; height: 16px; }
+
+/* nav/tool buttons: keep the original tiny caption under the icon */
+.btn .mini { font-size: 9px; line-height: 1.1; margin-top: 4px; color: inherit; }
+
+/* ------------------------------------------------------------------ */
+/* CSS-only replacements for the jQuery tooltips/popovers              */
+/* ------------------------------------------------------------------ */
+.hpop { position: relative; }
+.hpop > .hpop-body {
+	display: none;
+	position: absolute;
+	left: 0; top: 100%;
+	z-index: 40;
+	background-color: #319a9b;
+	color: #cfd8dc;
+	font-weight: bold;
+	border-radius: 4px;
+	padding: 6px 9px;
+	max-width: 420px;
+	word-wrap: break-word;
+	white-space: normal;
+	box-shadow: 0 2px 8px rgba(0,0,0,.4);
+}
+.hpop:hover > .hpop-body { display: block; }
+.hpop-body img { max-width: 100%; display: block; }
+
+/* simple carousel (Statistics) */
+.car { position: relative; }
+.car .car-item { display: none; }
+.car .car-item.on { display: block; }
+.car .car-img { width: 100%; height: 100%; display: block; }
+.car .car-cap {
+	position: absolute; left: 0; right: 0; bottom: 10px;
+	text-align: center; color: #fff; text-shadow: 0 1px 2px #000;
+}
+.car .car-ctl {
+	position: absolute; top: 0; bottom: 0; width: 12%;
+	display: flex; align-items: center; justify-content: center;
+	color: #fff; font-size: 22px; cursor: pointer; text-decoration: none;
+	background: linear-gradient(to right, rgba(0,0,0,.35), transparent);
+}
+.car .car-ctl.right { right: 0; background: linear-gradient(to left, rgba(0,0,0,.35), transparent); }
+.car .car-ctl.left { left: 0; }
+.car .car-dots {
+	position: absolute; left: 0; right: 0; bottom: -6px;
+	text-align: center; list-style: none; padding: 0;
+}
+.car .car-dots li {
+	display: inline-block; width: 10px; height: 10px; margin: 0 3px;
+	border: 1px solid #fff; border-radius: 99px; cursor: pointer;
+}
+.car .car-dots li.on { background: #fff; }
+
+/* stats tree (kept iframe-free) */
+.tree-reloaded { font-family: Tahoma, sans-serif; font-size: small; color: #cfd8dc; }
+.tree-reloaded .branch { display: block; margin-left: 16px; }
+.tree-reloaded .trigger { cursor: pointer; }
+.tree-reloaded img { border: 0; vertical-align: middle; margin-right: 2px; }
+
+/* logs */
+pre.relpre {
+	height: 300px;
+	background-color: #39425f;
+	color: #ffffff;
+	overflow: auto;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+/* prefs pill rows */
+.pref-col { width: 600px; margin: auto; margin-top: 20px; padding-bottom: 20px; }
+.pref-head {
+	font-size: 16px; width: 550px;
+	background-color: #319a9b; color: #cfd8dc;
+	display: block; border-radius: 4px; padding: 6px 12px;
+	margin: 14px 0 6px;
+}
+.pref-row { display: flex; width: 550px; margin-bottom: 4px; }
+.pref-row > label {
+	flex: 1 1 auto;
+	background-color: #ffffff; color: #319a9b;
+	border-top-left-radius: 4px; border-bottom-left-radius: 4px;
+	padding: 6px 10px; margin: 0; font-weight: normal;
+	display: flex; align-items: center; gap: 8px;
+}
+.pref-row > input[type=text] {
+	width: 100px; flex: none;
+	border-top-right-radius: 4px; border-bottom-right-radius: 4px;
+	border-top-left-radius: 0; border-bottom-left-radius: 0;
+	padding: 6px 10px;
+}
+.pref-row > span.filler {
+	width: 100px; flex: none; background: #eee; opacity: .6;
+	border-top-right-radius: 4px; border-bottom-right-radius: 4px;
+}
+
+/* scroll-to-top button (Search page) */
+#scroll {
+	position: fixed; right: 18px; bottom: 60px; z-index: 30;
+	display: none; width: 42px; height: 42px; border-radius: 99px;
+	background: #319a9b; color: #fff; border: 0; cursor: pointer;
+	font-size: 20px; line-height: 1;
+}
+#scroll.show { display: block; }
+
+/* ------------------------------------------------------------------ */
+/* Phone usability (desktop unchanged)                                 */
+/* ------------------------------------------------------------------ */
+.tw { width: 100%; }
+@media (max-width: 820px) {
+	.tw { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+	.tw > .table { min-width: 720px; }
+	/* Bootstrap 3 hides .navbar-collapse at small sizes; scroll it instead */
+	.navbar .collapse.navbar-collapse { display: flex !important; overflow-x: auto; }
+	.navbar-form { margin: 0; padding: 0; }
+	.navbar .container { padding: 0 6px; }
+	#footer { position: static; }
+	/* the navbar wraps to two lines on phones: let it flow with the page */
+	.navbar-fixed-top { position: static; }
+	body { padding-top: 0; }
+	.pref-col, .pref-row, .pref-head { width: 100%; }
+}

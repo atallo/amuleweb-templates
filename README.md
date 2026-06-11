@@ -18,6 +18,7 @@ decoupled architecture:
 |----------|--------|-------------|
 | [`simple`](templates/simple) | Original design | Clean, minimalist UI; light + dark theme, responsive. |
 | [`amule-default`](templates/amule-default) | Migrated from aMule's stock [`default`](https://github.com/amule-project/amule/tree/master/src/webserver/default) template | Faithful reproduction of the classic look; light mobile support. |
+| [`reloaded`](templates/reloaded) | Migrated from [MatteoRagni/AmuleWebUI-Reloaded](https://github.com/MatteoRagni/AmuleWebUI-Reloaded) (GPL-3.0) | Dark Material Bootstrap UI, fully self-hosted (no CDNs); improved phone support. |
 
 Each template's README documents its features and embeds its screenshots;
 the images live under [`docs/screenshots/<template>/`](docs/screenshots).

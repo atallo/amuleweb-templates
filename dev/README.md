@@ -17,6 +17,16 @@ dev\download-deps.ps1            # Windows
 It is stored in `vendor/` and mirrored into every `templates/<name>/`
 directory (deployable templates must be flat).
 
+### Dependency versions
+
+| Library | Pinned | Latest check | Notes |
+|---------|--------|--------------|-------|
+| [htm](https://github.com/developit/htm) (`preact/standalone` build) | **3.1.1** | 3.1.1 is the latest published release (the `latest` npm tag resolves to it) | Single self-contained ES module bundling **Preact 10** — chosen because templates are no-build and amuleweb cannot serve bare-specifier imports or import maps reliably. Bump `HTM_VERSION` in both `download-deps.*` scripts to upgrade. |
+
+Template-specific **CSS** assets (e.g. the Bootstrap 3 stylesheets in
+`templates/reloaded/`) are not JS dependencies: they are part of the
+migrated template's original look and are committed with it.
+
 ## Preview a template without aMule (mock mode)
 
 `mock.js` provides canned data so the whole interface is browsable offline.
