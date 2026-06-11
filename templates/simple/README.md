@@ -1,5 +1,7 @@
 # Template: simple
 
+**Origin:** original design.
+
 A clean, minimalist control panel for amuleweb. Single-page app (Preact +
 HTM, no build step) talking to the shared JSON layer
 ([`common/api.php`](../../common/api.php)).

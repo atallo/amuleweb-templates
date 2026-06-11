@@ -11,14 +11,13 @@ decoupled architecture:
   shared by every template in this repository.
 * **One single-page app per template** (Preact + HTM, no build step) that
   consumes the API over `fetch` and renders everything client-side.
-* **No bundled images** beyond the aMule logo — icons are inline SVG, and the
-  chunk progress bars / statistics graphs are PNGs rendered by amuleweb
-  itself, exactly like the stock template.
+* Chunk progress bars and statistics graphs are PNGs **rendered by amuleweb
+  itself**, exactly like the stock template.
 
-| Template | Description |
-|----------|-------------|
-| [`simple`](templates/simple) | Clean, minimalist UI. Light + dark theme, responsive (desktop → phone), live polling. |
-| [`amule-default`](templates/amule-default) | Faithful reproduction of aMule's stock web template look, rebuilt on the same API; light mobile support. |
+| Template | Origin | Description |
+|----------|--------|-------------|
+| [`simple`](templates/simple) | Original design | Clean, minimalist UI. No images beyond the aMule logo (inline SVG icons), light + dark theme, responsive (desktop → phone), live polling. |
+| [`amule-default`](templates/amule-default) | Migrated from aMule's stock [`default`](https://github.com/amule-project/amule/tree/master/src/webserver/default) template | Faithful reproduction of the classic look, rebuilt on the same API; light mobile support. |
 
 ![simple](docs/screenshots/simple-transfers.png)
 
@@ -150,7 +149,11 @@ Run `dev/download-deps.*` first so each template has its JS runtime.
    there if a new view needs more data, so every template benefits.
 3. `login.php` must be fully self-contained (inline CSS): amuleweb only
    serves images to a not-yet-authenticated client.
-4. The build and release scripts pick up any directory under `templates/`
+4. **State the template's origin** in its README and in the table above:
+   templates migrated/ported from an existing design must say where they
+   came from (with a link); original designs say "Original design" (or
+   nothing at all).
+5. The build and release scripts pick up any directory under `templates/`
    automatically.
 
 ## Releases

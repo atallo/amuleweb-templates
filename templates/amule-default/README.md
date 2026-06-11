@@ -1,5 +1,9 @@
 # Template: amule-default
 
+**Origin:** migrated from the stock
+[`default` template](https://github.com/amule-project/amule/tree/master/src/webserver/default)
+of the [aMule project](https://www.amule.org) (GPL), images included.
+
 A faithful reproduction of aMule's **stock web template** ("default") — same
 colors, typography, framed tables, icon navigation with rollovers, login
 page and number formats — rebuilt as a single-page app on the shared JSON
