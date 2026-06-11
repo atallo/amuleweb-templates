@@ -4,3 +4,5 @@
 # Downloaded front-end runtime (dev/download-deps.*)
 /vendor/
 templates/*/preact-htm-standalone.module.js
+templates/mobilemule/onsen-css-components.min.css
+templates/mobilemule/dark-onsen-css-components.min.css

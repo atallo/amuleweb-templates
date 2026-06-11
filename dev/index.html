@@ -36,12 +36,22 @@
 		const v = Date.now();
 		// Load the same stylesheets, in the same order, that the template's
 		// real shell declares — works for any template without hardcoding.
+		// id and disabled are preserved so per-template theme switching
+		// (e.g. mobilemule's dark mode) behaves like in production.
 		const shell = await (await fetch(`../templates/${tpl}/index.html?v=${v}`)).text();
-		const hrefs = [...shell.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map((m) => m[1]);
-		for (const href of (hrefs.length ? hrefs : ['app.css'])) {
+		const tags = [...shell.matchAll(/<link\b[^>]*>/g)].map((m) => m[0])
+			.filter((t) => /rel="stylesheet"/.test(t));
+		const links = tags.map((t) => ({
+			href: (t.match(/href="([^"]+)"/) || [])[1],
+			id: (t.match(/id="([^"]+)"/) || [])[1],
+			disabled: /\bdisabled\b/.test(t),
+		})).filter((x) => x.href);
+		for (const it of (links.length ? links : [{ href: 'app.css' }])) {
 			const l = document.createElement('link');
 			l.rel = 'stylesheet';
-			l.href = `../templates/${tpl}/${href}?v=${v}`;
+			if (it.id) l.id = it.id;
+			l.href = `../templates/${tpl}/${it.href}?v=${v}`;
+			if (it.disabled) l.disabled = true;
 			document.head.appendChild(l);
 		}
 		document.getElementById('tpl-css').remove();
