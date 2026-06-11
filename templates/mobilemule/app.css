@@ -1,0 +1,218 @@
+/*
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+ *
+ * app.css -- "mobilemule": custom layer on top of the Onsen UI CSS
+ * components (Apache-2.0), which replace the original's jQuery Mobile
+ * theming. Structure, colors of the progress bars and behaviors follow
+ * elbowz/mobileMule (GPL-3.0). Theme the base components with Onsen's
+ * official Theme Roller (https://onsen.io/theme-roller/) by replacing
+ * onsen-css-components.min.css; a dark variant ships alongside and can be
+ * toggled from the "mobileMule" settings page.
+ */
+
+:root {
+	--mm-toolbar-h: 44px;
+	--mm-footer-h: 34px;
+	--mm-menu-w: 17em;
+	--mm-divider-bg: #eceff1;
+	--mm-divider-fg: #37474f;
+	--mm-count-bg: #e0e0e0;
+	--mm-count-fg: #424242;
+}
+html.dark {
+	--mm-divider-bg: #263238;
+	--mm-divider-fg: #b0bec5;
+	--mm-count-bg: #37474f;
+	--mm-count-fg: #cfd8dc;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+	font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	padding-top: var(--mm-toolbar-h);
+	padding-bottom: calc(var(--mm-footer-h) + 8px);
+	background: #f2f2f2;
+}
+html.dark body { background: #1c1c1e; color: #eee; }
+
+small { color: gray; }
+.text-center { text-align: center; }
+
+/* ------------------------------------------------------------------ */
+/* Toolbar (header)                                                    */
+/* ------------------------------------------------------------------ */
+.mm-toolbar {
+	position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+	height: var(--mm-toolbar-h);
+	display: flex; align-items: center; justify-content: space-between;
+}
+.mm-toolbar .toolbar-button { padding: 4px 10px; }
+.mm-toolbar .center { flex: 1; text-align: center; font-weight: 500; }
+.mm-toolbar .gi { vertical-align: -2px; }
+
+/* ------------------------------------------------------------------ */
+/* Slide-out menu (reveal panel)                                       */
+/* ------------------------------------------------------------------ */
+.mm-menu {
+	position: fixed; top: 0; bottom: 0; left: 0; z-index: 60;
+	width: var(--mm-menu-w);
+	transform: translateX(-100%);
+	transition: transform .2s ease-out;
+	overflow-y: auto;
+	background: #fff;
+	box-shadow: 2px 0 8px rgba(0,0,0,.25);
+}
+html.dark .mm-menu { background: #2c2c2e; }
+.mm-menu.open { transform: translateX(0); }
+.mm-backdrop {
+	position: fixed; inset: 0; z-index: 55; background: rgba(0,0,0,.3);
+	display: none;
+}
+.mm-backdrop.show { display: block; }
+.mm-menu .list-item__center { justify-content: space-between; display: flex; }
+.mm-menu .gi { color: #757575; }
+html.dark .mm-menu .gi { color: #9e9e9e; }
+
+/* Desktop: keep the menu open and push the content (like the original) */
+@media (min-width: 769px) {
+	.mm-menu { transform: translateX(0); box-shadow: none; border-right: 1px solid rgba(0,0,0,.12); }
+	.mm-backdrop { display: none !important; }
+	body { padding-left: var(--mm-menu-w); }
+	.mm-toolbar { left: var(--mm-menu-w); }
+	.mm-footer { left: var(--mm-menu-w); }
+	.mm-toolbar .menu-btn { visibility: hidden; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Footer                                                              */
+/* ------------------------------------------------------------------ */
+.mm-footer {
+	position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
+	height: var(--mm-footer-h);
+	display: flex; align-items: center; justify-content: space-between;
+	padding: 0 10px; font-size: 13px;
+	background: #f8f8f8; border-top: 1px solid rgba(0,0,0,.15);
+}
+html.dark .mm-footer { background: #2c2c2e; border-top-color: rgba(255,255,255,.12); color: #ccc; }
+
+/* ------------------------------------------------------------------ */
+/* Content / lists                                                     */
+/* ------------------------------------------------------------------ */
+.page-pad { padding: 8px; max-width: 980px; margin: 0 auto; }
+
+.mm-divider {
+	background: var(--mm-divider-bg); color: var(--mm-divider-fg);
+	font-weight: 600; padding: 8px 12px; font-size: 13px;
+	display: flex; align-items: center; gap: 6px;
+}
+.count-bubble {
+	margin-left: auto;
+	background: var(--mm-count-bg); color: var(--mm-count-fg);
+	border-radius: 999px; padding: 1px 9px; font-size: 12px; font-weight: 600;
+	white-space: nowrap;
+}
+.mm-item { position: relative; }
+.mm-item h3 {
+	margin: 0; font-size: 14px; font-weight: 600;
+	overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.mm-item p { margin: 2px 0; font-size: 12.5px; color: #666; }
+html.dark .mm-item p { color: #aaa; }
+
+/* progress bar with text inside (original colors) */
+.bar { width: 100%; background-color: lightgray; border-radius: 3px; overflow: hidden; }
+html.dark .bar { background-color: #444; }
+.bar > .completed-bar {
+	text-align: center; color: white; text-shadow: none; white-space: nowrap;
+	font-size: 12px; min-width: -webkit-fit-content; min-width: fit-content;
+	padding: 1px 4px;
+}
+.bar > .completed-bar.downloading { background-color: darkseagreen; }
+.bar > .completed-bar.waiting { background-color: #F4C430; }
+.bar > .completed-bar.pause { background-color: #E52B50; }
+
+/* per-file command buttons: revealed on hover/selection (original) */
+.file-command {
+	opacity: 0; transition: opacity .4s ease-in-out;
+	position: absolute; right: 8px; bottom: 4px;
+	display: flex; gap: 14px;
+}
+.mm-item:hover .file-command, .mm-item.selected .file-command { opacity: 1; }
+.file-command button {
+	border: 0; background: transparent; padding: 2px; cursor: pointer; color: inherit;
+}
+.mm-item.selected { background: rgba(66,133,244,.12); }
+
+/* command navbar (downloads page) */
+.cmdbar { display: flex; }
+.cmdbar button {
+	flex: 1; min-width: 0; overflow: hidden; white-space: nowrap;
+	border: 0; background: transparent; padding: 6px 2px 8px;
+	font-size: 10px; cursor: pointer; color: inherit;
+	border-bottom: 1px solid rgba(0,0,0,.12);
+}
+.cmdbar button .gi { display: block; margin: 0 auto 3px; width: 16px; height: 16px; }
+.cmdbar button:active { background: rgba(0,0,0,.07); }
+
+/* icons */
+.gi { display: inline-block; width: 14px; height: 14px; fill: currentColor; vertical-align: middle; }
+.gi-lg { width: 18px; height: 18px; }
+.pull-right { margin-left: auto; }
+
+/* notify toast (replaces the jQM popup notify) */
+.mm-toast {
+	position: fixed; top: calc(var(--mm-toolbar-h) + 6px); left: 50%;
+	transform: translateX(-50%);
+	z-index: 80; max-width: 92vw;
+	background: #323232; color: #fff; border-radius: 6px;
+	padding: 8px 14px; font-size: 13px;
+	box-shadow: 0 2px 10px rgba(0,0,0,.35);
+	animation: mmslide .25s ease-out;
+}
+.mm-toast.error { background: #c62828; }
+@keyframes mmslide { from { transform: translate(-50%, -16px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+
+/* about modal */
+.mm-modal-back { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; }
+.mm-modal {
+	background: #fff; border-radius: 8px; max-width: 320px; width: 90vw;
+	padding: 16px; font-size: 14px;
+}
+html.dark .mm-modal { background: #2c2c2e; color: #eee; }
+
+/* speed chart */
+.mm-chart { width: 100%; height: 170px; display: block; background: rgba(0,0,0,.03); border-radius: 6px; }
+html.dark .mm-chart { background: rgba(255,255,255,.05); }
+.mm-chart .up { fill: rgba(220,220,220,0.25); stroke: rgba(160,160,160,1); stroke-width: 1.5; }
+.mm-chart .dn { fill: rgba(151,187,205,0.25); stroke: rgba(110,160,190,1); stroke-width: 1.5; }
+.mm-chart text { font-size: 9px; fill: #888; }
+
+/* collapsibles (graphs / stats) */
+details.mm-col { border: 1px solid rgba(0,0,0,.12); border-radius: 6px; margin-bottom: 8px; background: #fff; overflow: hidden; }
+html.dark details.mm-col { background: #2c2c2e; border-color: rgba(255,255,255,.12); }
+details.mm-col > summary {
+	cursor: pointer; padding: 10px 12px; font-weight: 600; font-size: 14px;
+	list-style: none;
+}
+details.mm-col > summary::before { content: "+ "; }
+details.mm-col[open] > summary::before { content: "− "; }
+details.mm-col img { width: 100%; display: block; }
+details.mm-col .inner { padding: 0 12px 10px; }
+table.kv { width: 100%; border-collapse: collapse; margin: 4px 0; }
+table.kv td, table.kv th { border-bottom: 1px solid rgba(127,127,127,.25); padding: 5px 2px; font-size: 13px; text-align: left; }
+table.kv th { text-align: right; }
+
+/* forms */
+.mm-field { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 0; }
+.mm-field > label { flex: 1; font-size: 14px; }
+.mm-field input[type=text], .mm-field input[type=number] {
+	width: 110px; text-align: right;
+}
+.mm-field .select-input { width: auto; }
+.searchbox { width: 100%; margin: 6px 0; }
+
+#btScrollUp { cursor: pointer; }
+.linklike { color: #1976d2; cursor: pointer; text-decoration: none; }
+html.dark .linklike { color: #64b5f6; }

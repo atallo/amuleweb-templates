@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!--
+  SPDX-License-Identifier: GPL-3.0-or-later
+  Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+-->
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="theme-color" content="#545454" />
+	<title>mobileMule</title>
+	<link rel="icon" href="favicon.ico" />
+	<link rel="icon" href="icon-192x192.png" sizes="192x192" />
+	<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+	<link rel="apple-touch-icon" href="apple-touch-icon-76x76.png" sizes="76x76" />
+	<link rel="apple-touch-icon" href="apple-touch-icon-120x120.png" sizes="120x120" />
+	<link rel="apple-touch-icon" href="apple-touch-icon-152x152.png" sizes="152x152" />
+	<link rel="manifest" href="manifest.json" />
+	<!-- Onsen UI CSS components (download-deps fetches them; swap the light
+	     file with an Onsen Theme Roller export for a custom theme) -->
+	<link id="onsen-light" rel="stylesheet" href="onsen-css-components.min.css" />
+	<link id="onsen-dark" rel="stylesheet" href="dark-onsen-css-components.min.css" disabled />
+	<link rel="stylesheet" href="app.css" />
+</head>
+<body>
+	<div id="app">
+		<div id="boot" style="padding:60px 20px;text-align:center;color:#888;font-family:sans-serif">
+			<noscript>This control panel requires JavaScript.</noscript>
+			<span id="boot-msg">Loading…</span>
+		</div>
+	</div>
+	<script type="module">
+		import('./app.js').catch((err) => {
+			const el = document.getElementById('boot-msg');
+			if (el) {
+				el.innerHTML =
+					'Could not start mobilemule.<br><br><code>' +
+					(err && err.message ? err.message : err) + '</code><br><br>' +
+					'Dependencies may be missing — run the download script ' +
+					'(see the repository dev/ folder).';
+			}
+		});
+	</script>
+</body>
+</html>
