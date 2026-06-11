@@ -1,0 +1,163 @@
+/*
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+ *
+ * app.css -- "amule-default": faithful reproduction of aMule's stock web
+ * template look (colors, typography and framed layout transcribed from the
+ * original pages' inline styles and style.css), driven by the shared JSON
+ * API instead of server-side rendering. A few media queries at the end add
+ * phone usability without altering the desktop appearance.
+ */
+
+html, body { margin: 0; padding: 0; min-height: 100%; }
+body {
+	background: url(fond.gif);
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+/* ------------------------------------------------------------------ */
+/* Original element styles (verbatim from the stock template)         */
+/* ------------------------------------------------------------------ */
+
+caption {
+	font-family: Helvetica;
+	font-size: 18px;
+	font-weight: bold;
+	color: #003161;
+}
+th {
+	font-family: Helvetica;
+	font-size: 14px;
+	font-weight: bold;
+	color: #003161;
+	padding: 0 5px;
+}
+a:link, a:active, a:visited { color: #003161; text-decoration: none; }
+a:hover { color: #c0c0c0; text-decoration: underline; }
+td { font-family: Helvetica; font-size: 12px; font-weight: normal; }
+label { font-family: "trebuchet ms", sans-serif; font-size: 12px; font-weight: bold; }
+input {
+	border: 1px solid #003161;
+	background-color: white;
+	font-family: "trebuchet ms", sans-serif;
+	font-size: 12px;
+	color: #003161;
+}
+select, option { background-color: white; font-size: 12px; color: #003161; }
+textarea {
+	border: 1px solid #003161;
+	background-color: #90B6DB;
+	font-family: "trebuchet ms", sans-serif;
+	font-size: 12px;
+	color: white;
+}
+
+.texte {
+	font-family: Helvetica;
+	font-size: 12px;
+	font-weight: normal;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	word-break: break-all;
+	word-wrap: break-word;
+	padding: 0 3px;
+}
+.texte-full-name { max-width: 0; width: 45%; }
+.texte-full-name-upload { width: 55%; }
+.texteinv { font-family: Helvetica; font-size: 12px; font-weight: bold; color: white; }
+.totrow { font-size: 12px; color: #908c8c; padding-bottom: 0; }
+
+/* ------------------------------------------------------------------ */
+/* Page shell (replaces the original 100%-height table + iframes)     */
+/* ------------------------------------------------------------------ */
+
+.page { min-height: 100vh; display: flex; flex-direction: column; }
+main.content { flex: 1 1 auto; padding-bottom: 6px; }
+
+.hdr { display: flex; align-items: flex-start; }
+.hdr img.logo { width: 143px; height: 64px; display: block; border: 0; flex: none; }
+.hdr .band {
+	flex: 1 1 auto; min-width: 0; height: 64px;
+	background: url(fond_haut.png) repeat-x;
+	display: flex; justify-content: flex-end; align-items: flex-start;
+}
+.hdr .nav { display: flex; }
+a.navbtn { display: block; width: 52px; height: 50px; background-repeat: no-repeat; flex: none; }
+a.nav-transf   { background-image: url(transf_0.png); }
+a.nav-transf:hover   { background-image: url(transf_1.png); }
+a.nav-shared   { background-image: url(shared_0.png); }
+a.nav-shared:hover   { background-image: url(shared_1.png); }
+a.nav-search   { background-image: url(search_0.png); }
+a.nav-search:hover   { background-image: url(search_1.png); }
+a.nav-edkserv  { background-image: url(edkserv_0.png); }
+a.nav-edkserv:hover  { background-image: url(edkserv_1.png); }
+a.nav-sheserv  { background-image: url(sheserv_0.png); }
+a.nav-sheserv:hover  { background-image: url(sheserv_1.png); }
+a.nav-stats    { background-image: url(stats_0.png); }
+a.nav-stats:hover    { background-image: url(stats_1.png); }
+.hdr img.colsep { display: block; border: 0; }
+.hdrlinks { width: 190px; text-align: right; padding: 4px 10px 0 10px; line-height: 1.5; }
+.hdrlinks a:link, .hdrlinks a:visited, .hdrlinks a:active { color: #003161; }
+
+.footerbar { display: flex; align-items: center; min-height: 40px; }
+.footerbar > div { width: 50%; text-align: center; }
+
+/* toolbar image-buttons */
+a.tbtn { display: inline-block; vertical-align: middle; }
+a.tbtn img { border: 0; display: block; }
+.toolrow td { vertical-align: middle; }
+
+/* sortable header links keep th styling */
+th a:link, th a:visited, th a:active { color: #003161; }
+
+/* progress bar (server-rendered PNG; .pfall is the mock/no-libpng fallback) */
+img.pimg { width: 200px; height: 20px; border: 0; vertical-align: middle; }
+.pfall {
+	display: inline-block; width: 200px; height: 20px;
+	border: 1px solid #7f7f7f; background: #ffffff; vertical-align: middle;
+}
+.pfall i { display: block; height: 100%; background: #3366cc; }
+
+/* statistics tree (from stats_tree.php) */
+.trigger { cursor: pointer; font-family: Tahoma; font-size: small; }
+.branch { display: block; margin-left: 16px; font-family: Tahoma; font-size: small; }
+.tree-wrap { background: #ffffff; }
+.tree-wrap img { border: 0; vertical-align: middle; margin-right: 2px; }
+
+/* log boxes (replace the original iframes) */
+pre.logpre {
+	background: #ffffff; color: #000000;
+	font-family: "Courier New", monospace; font-size: small;
+	white-space: pre-wrap; word-break: break-word;
+	margin: 0; padding: 4px; border: 0;
+	height: 400px; overflow: auto;
+}
+pre.logpre.small { height: 200px; }
+
+/* guest notice */
+.guestmsg { font-weight: bold; font-size: 12px; }
+
+/* ------------------------------------------------------------------ */
+/* Mobile usability (desktop look untouched above 820px)              */
+/* ------------------------------------------------------------------ */
+
+.tw { width: 100%; }
+
+@media (max-width: 820px) {
+	/* keep the framed box at viewport width; only its white area scrolls */
+	.boxframe { table-layout: fixed; width: 100%; }
+	.tw { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+	.tw > table { min-width: 700px; }
+	.hdr { flex-wrap: wrap; }
+	.hdr .band { overflow-x: auto; }
+	.hdrlinks { width: auto; }
+	.footerbar { flex-direction: column; gap: 4px; padding: 6px 0; }
+	.footerbar > div { width: 100%; }
+	.kadcols { display: block; }
+	.kadcols > td { display: block; width: 100% !important; }
+	img.statimg { width: 100%; max-width: 500px; height: auto; }
+}
+@media (min-width: 821px) {
+	img.statimg { width: 500px; height: 200px; }
+}

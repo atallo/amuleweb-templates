@@ -32,9 +32,11 @@
 	-->
 	<script type="module">
 		const tpl = new URLSearchParams(location.search).get('template') || 'simple';
-		document.getElementById('tpl-css').href = `../templates/${tpl}/app.css`;
+		// Dev-only cache buster so edits show up on plain reload.
+		const v = Date.now();
+		document.getElementById('tpl-css').href = `../templates/${tpl}/app.css?v=${v}`;
 		await import('./mock.js');
-		await import(`../templates/${tpl}/app.js`);
+		await import(`../templates/${tpl}/app.js?v=${v}`);
 	</script>
 </body>
 </html>
