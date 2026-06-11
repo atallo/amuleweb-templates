@@ -18,8 +18,11 @@ decoupled architecture:
 | Template | Description |
 |----------|-------------|
 | [`simple`](templates/simple) | Clean, minimalist UI. Light + dark theme, responsive (desktop → phone), live polling. |
+| [`amule-default`](templates/amule-default) | Faithful reproduction of aMule's stock web template look, rebuilt on the same API; light mobile support. |
 
-![Transfers](docs/screenshots/simple-transfers.png)
+![simple](docs/screenshots/simple-transfers.png)
+
+![amule-default](docs/screenshots/amule-default-transfers.png)
 
 More screenshots in [docs/screenshots](docs/screenshots).
 
