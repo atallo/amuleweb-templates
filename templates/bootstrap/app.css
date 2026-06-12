@@ -1,0 +1,175 @@
+/*
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ * Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+ *
+ * app.css -- "bootstrap": the upstream template's own stylesheet
+ * (amuleweb-bootstrap.css), transcribed verbatim on top of Bootstrap
+ * 4.5.0, plus a small SPA-additions section at the end.
+ * Origin: https://github.com/pedro77/amuleweb-bootstrap-template
+ */
+
+/*
+* FILE: navbar-top-fixed.css
+*/
+/* Show it is fixed to the top */
+body {
+  padding-top: 4.5rem;
+}
+
+/*
+* aMule Web
+*/
+input[type=number] {
+  text-align: right;
+}
+/* Chrome, Safari, Edge, Opera */
+form.amule .form-group input[type=number]::-webkit-outer-spin-button,
+form.amule .form-group input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+form.amule .form-group input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Navbar */
+nav.navbar li.nav-item svg.bi {
+  fill: currentColor;
+  width: 2rem;
+  height: 2rem;
+}
+
+/* Form SVG icons */
+form.amule svg.bi {
+  fill: currentColor;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* Remove bottom border from the last row */
+.amule-list div.row:last-child {
+  border-bottom: none !important;
+}
+
+/* Servers */
+.amule-servers svg.bi {
+  fill: currentColor;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* Search */
+form.amule.search .form-group label {
+  justify-content: left;
+  width: 6rem;
+}
+form.amule.search .form-group input {
+  width: 6rem;
+}
+form.amule.search .form-group.amule-size input {
+  width: 4rem;
+}
+form.amule.search .form-group select {
+  width: 6rem;
+}
+#searchval4 {
+  min-width: 14rem;
+  text-align: left;
+}
+@media (min-width:576px) {
+  #searchval4 {
+    min-width: 26rem;
+    text-align: left;
+  }
+}
+@media (min-width:768px) {
+  #searchval4 {
+    min-width: 30rem;
+  }
+}
+@media (min-width:992px) {
+  #searchval4 {
+    min-width: 24rem;
+  }
+  form.amule.search .form-group.amule-size label {
+    width: 4rem;
+  }
+}
+@media (min-width:1200px) {
+  #searchval4 {
+    min-width: 34rem;
+  }
+  form.amule.search .form-group.amule-size label {
+    width: 6rem;
+  }
+}
+
+/* Kademilia */
+form.amule.kad .form-group label {
+  justify-content: left;
+  width: 3rem;
+}
+form.amule.kad .form-group input {
+  width: 6rem;
+}
+form.amule.kad .form-group.amule-ip input {
+  width: 3.5rem;
+}
+@media (min-width:992px) {
+  form.amule.kad .form-group label {
+    width: 4rem;
+  }
+}
+
+/* Statistics */
+.amule-stats #tree {
+  padding-left: 1.2rem;
+}
+.amule-stats #tree svg.bi {
+  fill: currentColor;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-left: -1.2rem;
+}
+.amule-stats #tree .item svg.bi {
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-right: 0.2rem;
+}
+
+/* Preferences */
+form.amule.prefs h6 {
+  margin-top: 1rem;
+}
+form.amule.prefs .form-group label {
+  justify-content: left;
+  width: 13rem;
+}
+form.amule.prefs .form-group label.custom-control-label {
+  width: 17rem;
+}
+form.amule.prefs .form-group input {
+  width: 5rem;
+}
+@media (min-width:576px) {
+  form.amule.prefs .form-group label {
+    width: 20rem;
+  }
+  form.amule.prefs .form-group label.custom-control-label {
+    width: 22rem;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* SPA additions (not in the upstream stylesheet)                     */
+/* ------------------------------------------------------------------ */
+
+/* the original navigated between pages; here the nav icons are buttons */
+nav.navbar .nav-link, .amule-list a { cursor: pointer; }
+
+/* checkbox inputs in prefs keep their native look (numbers are sized) */
+form.amule.prefs .form-group input[type=checkbox] { width: auto; }
+
+/* the statistics tree items hang their icons to the left like upstream */
+.amule-stats #tree ul { margin-bottom: 0; }

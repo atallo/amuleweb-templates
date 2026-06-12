@@ -6,3 +6,5 @@
 templates/*/preact-htm-standalone.module.js
 templates/mobilemule/onsen-css-components.min.css
 templates/mobilemule/dark-onsen-css-components.min.css
+templates/bootstrap/bootstrap.min.css
+templates/bootstrap/bootstrap-reboot.min.css

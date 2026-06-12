@@ -12,12 +12,15 @@
 #   * Onsen UI CSS components (Apache-2.0; themable with the official
 #     Theme Roller at https://onsen.io/theme-roller/)
 #     -> templates/mobilemule only
+#   * Bootstrap CSS (MIT; the version the upstream template shipped)
+#     -> templates/bootstrap only
 #
 # Requires curl or wget. Re-run any time to refresh.
 set -eu
 
 HTM_VERSION="3.1.1"
 ONSEN_VERSION="2.12.8"
+BOOTSTRAP_VERSION="4.5.0"
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 mkdir -p "${ROOT}/vendor"
@@ -58,6 +61,18 @@ if [ -d "${ROOT}/templates/mobilemule" ]; then
 	cp "${ONSEN_LIGHT}" "${ROOT}/templates/mobilemule/"
 	cp "${ONSEN_DARK}" "${ROOT}/templates/mobilemule/"
 	echo "  -> templates/mobilemule/{onsen-css-components.min.css, dark-onsen-css-components.min.css}"
+fi
+
+# --- Bootstrap CSS (bootstrap) ---------------------------------------
+BS_CSS="${ROOT}/vendor/bootstrap.min.css"
+BS_REBOOT="${ROOT}/vendor/bootstrap-reboot.min.css"
+fetch "https://unpkg.com/bootstrap@${BOOTSTRAP_VERSION}/dist/css/bootstrap.min.css" "${BS_CSS}"
+fetch "https://unpkg.com/bootstrap@${BOOTSTRAP_VERSION}/dist/css/bootstrap-reboot.min.css" "${BS_REBOOT}"
+
+if [ -d "${ROOT}/templates/bootstrap" ]; then
+	cp "${BS_CSS}" "${ROOT}/templates/bootstrap/"
+	cp "${BS_REBOOT}" "${ROOT}/templates/bootstrap/"
+	echo "  -> templates/bootstrap/{bootstrap.min.css, bootstrap-reboot.min.css}"
 fi
 
 echo "Done."
