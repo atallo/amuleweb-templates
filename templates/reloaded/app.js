@@ -366,11 +366,11 @@ function DownloadView({ data, status, guard, refresh }) {
 					</div>
 					<div class="btn-group">
 						<select id="filter" class="form-control btn-group" value=${fStatus} onChange=${(e) => setFStatus(e.target.value)}>
-							${['all', 'Waiting', 'Paused', 'Downloading'].map((s) => html`<option key=${s}>${s}</option>`)}
+							${['all', 'Waiting', 'Paused', 'Downloading'].map((s) => html`<option key=${s} value=${s}>${s}</option>`)}
 						</select>
 						<select id="category" class="form-control btn-group" value=${fCat} onChange=${(e) => setFCat(e.target.value)}>
-							<option>all</option>
-							${cats.filter((c) => c !== 'all').map((c) => html`<option key=${c}>${c}</option>`)}
+							<option value="all">all</option>
+							${cats.filter((c) => c !== 'all').map((c) => html`<option key=${c} value=${c}>${c}</option>`)}
 						</select>
 						<${TBtn} icon="filter" label="Filter" cls="btn-filter" onClick=${() => { setAStatus(fStatus); setACat(fCat); }} />
 						<${GuestBadge} status=${status} />
@@ -496,7 +496,7 @@ function SharedView({ data, status, guard, refresh }) {
 					</div>
 					<div class="btn-group">
 						<select id="filter" class="form-control btn-group" value=${prioSel} onChange=${(e) => setPrioSel(e.target.value)}>
-							${['All', 'Low', 'Normal', 'High', 'Release'].map((o) => html`<option key=${o}>${o}</option>`)}
+							${['All', 'Low', 'Normal', 'High', 'Release'].map((o) => html`<option key=${o} value=${o}>${o}</option>`)}
 						</select>
 						<${TBtn} icon="check" label="Set" title="Set selected to this priority" cls="btn-filter" onClick=${applyPrio} />
 						<${GuestBadge} status=${status} />
@@ -583,7 +583,7 @@ function SearchView({ data, status, guard, refresh }) {
 		sel.clear();
 	};
 	const unitSel = (v, set, style) => html`<select class="form-control btn-group" style=${style} value=${v} onChange=${(e) => set(e.target.value)}>
-		${Object.keys(UNITS).map((u) => html`<option key=${u}>${u}</option>`)}</select>`;
+		${Object.keys(UNITS).map((u) => html`<option key=${u} value=${u}>${u}</option>`)}</select>`;
 
 	return html`
 	<div>
@@ -600,7 +600,7 @@ function SearchView({ data, status, guard, refresh }) {
 							onInput=${(e) => setQ(e.target.value)} onKeyDown=${(e) => e.key === 'Enter' && doSearch(e)} />
 						<select class="form-control btn-group" style="border-radius:0px; background-color:#eee;"
 							value=${stype} onChange=${(e) => setStype(e.target.value)}>
-							${['Local', 'Global', 'Kad'].map((t) => html`<option key=${t}>${t}</option>`)}
+							${['Local', 'Global', 'Kad'].map((t) => html`<option key=${t} value=${t}>${t}</option>`)}
 						</select>
 						<input class="btn btn-info btn-group" type="submit" value="Search" style="width:140px;" onClick=${doSearch} />
 					</div></p>

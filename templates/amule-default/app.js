@@ -301,11 +301,11 @@ function DownloadView({ data, status, guard, refresh }) {
 					<td>
 						${' '}
 						<select value=${fStatus} onChange=${(e) => setFStatus(e.target.value)}>
-							${['all', 'Waiting', 'Paused', 'Downloading'].map((s) => html`<option key=${s}>${s}</option>`)}
+							${['all', 'Waiting', 'Paused', 'Downloading'].map((s) => html`<option key=${s} value=${s}>${s}</option>`)}
 						</select>
 						<select value=${fCat} onChange=${(e) => setFCat(e.target.value)}>
-							<option>all</option>
-							${cats.filter((c) => c !== 'all').map((c) => html`<option key=${c}>${c}</option>`)}
+							<option value="all">all</option>
+							${cats.filter((c) => c !== 'all').map((c) => html`<option key=${c} value=${c}>${c}</option>`)}
 						</select>
 					</td>
 					<td><a class="tbtn" href="#" title="Apply"
@@ -428,7 +428,7 @@ function SharedView({ data, status, guard, refresh }) {
 			<td><a class="tbtn" href="#" title="Priority up" onClick=${(e) => { e.preventDefault(); run('prioup'); }}><img src=${A + 'up.png'} alt="Up" /></a></td>
 			<td><a class="tbtn" href="#" title="Priority down" onClick=${(e) => { e.preventDefault(); run('priodown'); }}><img src=${A + 'down.png'} alt="Down" /></a></td>
 			<td><select value=${prio} onChange=${(e) => setPrio(e.target.value)}>
-				${['Select prio', 'Low', 'Normal', 'High'].map((o) => html`<option key=${o}>${o}</option>`)}
+				${['Select prio', 'Low', 'Normal', 'High'].map((o) => html`<option key=${o} value=${o}>${o}</option>`)}
 			</select>${' '}</td>
 			<td><a class="tbtn" href="#" title="Set priority" onClick=${(e) => { e.preventDefault(); setp(); }}><img src=${A + 'ok.png'} alt="Set" /></a></td>
 			<td>${(status && status.guest) ? html`<span class="guestmsg">${' '}You logged in as guest - commands are disabled</span>` : ''}</td>
@@ -498,7 +498,7 @@ function SearchView({ data, status, guard, refresh }) {
 		sel.clear();
 	};
 	const unitSel = (v, set) => html`<select value=${v} onChange=${(e) => set(e.target.value)}>
-		${Object.keys(UNITS).map((u) => html`<option key=${u}>${u}</option>`)}
+		${Object.keys(UNITS).map((u) => html`<option key=${u} value=${u}>${u}</option>`)}
 	</select>`;
 
 	return html`
@@ -523,7 +523,7 @@ function SearchView({ data, status, guard, refresh }) {
 					<td align="center"><a href="#" onClick=${(e) => { e.preventDefault(); refresh(); }}>Click here to update the search results</a></td>
 					<td align="right">Search type :</td>
 					<td><select value=${stype} onChange=${(e) => setStype(e.target.value)}>
-						${['Local', 'Global', 'Kad'].map((t) => html`<option key=${t}>${t}</option>`)}
+						${['Local', 'Global', 'Kad'].map((t) => html`<option key=${t} value=${t}>${t}</option>`)}
 					</select></td>
 					<td>Max Size : </td>
 					<td>

@@ -223,11 +223,11 @@ function Transfers({ data, guest, act, status }) {
 					<button class="btn icon danger" title="Cancel" disabled=${dis} onClick=${() => cmd('cancel')}><${Icon} name="x"/></button>
 					<div class="sep"></div>
 					<select value=${fStatus} onChange=${(e) => setFStatus(e.target.value)}>
-						${['All', 'Downloading', 'Waiting', 'Paused'].map((s) => html`<option key=${s}>${s}</option>`)}
+						${['All', 'Downloading', 'Waiting', 'Paused'].map((s) => html`<option key=${s} value=${s}>${s}</option>`)}
 					</select>
 					<select value=${fCat} onChange=${(e) => setFCat(e.target.value)}>
-						<option>All</option>
-						${cats.filter((c) => c !== 'all').map((c) => html`<option key=${c}>${c}</option>`)}
+						<option value="All">All</option>
+						${cats.filter((c) => c !== 'all').map((c) => html`<option key=${c} value=${c}>${c}</option>`)}
 					</select>
 					<div class="grow"></div>
 					<input class="mobilefull" type="text" placeholder="ed2k://… link" style="width:230px" value=${link}
@@ -326,7 +326,7 @@ function Search({ data, guest, act, status }) {
 		sel.clear();
 	};
 	const unitSel = (v, set) => html`<select value=${v} onChange=${(e) => set(e.target.value)}>
-		${Object.keys(UNITS).map((u) => html`<option key=${u}>${u}</option>`)}</select>`;
+		${Object.keys(UNITS).map((u) => html`<option key=${u} value=${u}>${u}</option>`)}</select>`;
 
 	return html`
 	<div class="card">
