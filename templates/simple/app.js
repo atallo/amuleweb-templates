@@ -230,10 +230,10 @@ function Transfers({ data, guest, act, status }) {
 					<div class="sep"></div>
 					<div class="group">
 						<select value=${fStatus} onChange=${(e) => setFStatus(e.target.value)}>
-							${['All', 'Downloading', 'Waiting', 'Paused'].map((s) => html`<option>${s}</option>`)}
+							${['All', 'Downloading', 'Waiting', 'Paused'].map((s) => html`<option value=${s}>${s}</option>`)}
 						</select>
 						<select value=${fCat} onChange=${(e) => setFCat(e.target.value)}>
-							<option>All</option>${cats.map((c) => html`<option>${c}</option>`)}
+							<option value="All">All</option>${cats.map((c) => html`<option value=${c}>${c}</option>`)}
 						</select>
 					</div>
 					<div class="grow"></div>
@@ -352,10 +352,10 @@ function Search({ data, guest, act, status }) {
 					<div class="sep"></div>
 					<label class="muted">Size</label>
 					<input type="number" min="0" placeholder="min" style="width:72px" value=${minV} onInput=${(e) => setMinV(e.target.value)} />
-					<select value=${minU} onChange=${(e) => setMinU(e.target.value)}>${Object.keys(UNITS).map((u) => html`<option>${u}</option>`)}</select>
+					<select value=${minU} onChange=${(e) => setMinU(e.target.value)}>${Object.keys(UNITS).map((u) => html`<option value=${u}>${u}</option>`)}</select>
 					<span class="muted">–</span>
 					<input type="number" min="0" placeholder="max" style="width:72px" value=${maxV} onInput=${(e) => setMaxV(e.target.value)} />
-					<select value=${maxU} onChange=${(e) => setMaxU(e.target.value)}>${Object.keys(UNITS).map((u) => html`<option>${u}</option>`)}</select>
+					<select value=${maxU} onChange=${(e) => setMaxU(e.target.value)}>${Object.keys(UNITS).map((u) => html`<option value=${u}>${u}</option>`)}</select>
 				</div>
 			</div>
 			<${Tw}><table class="tbl">

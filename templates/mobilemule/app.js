@@ -472,11 +472,11 @@ function DownloadsPage({ guard }) {
 			<div class="mm-field">
 				<label>Filter (status / category):</label>
 				<select class="select-input" value=${fStatus} onChange=${(e) => { setFStatus(e.target.value); persist({ dlFilterStatus: e.target.value }); }}>
-					${['all', 'Waiting', 'Paused', 'Downloading'].map((o) => html`<option key=${o}>${o}</option>`)}
+					${['all', 'Waiting', 'Paused', 'Downloading'].map((o) => html`<option key=${o} value=${o}>${o}</option>`)}
 				</select>
 				<select class="select-input" value=${fCat} onChange=${(e) => { setFCat(e.target.value); persist({ dlFilterCat: e.target.value }); }}>
-					<option>all</option>
-					${cats.filter((c) => c !== 'all').map((c) => html`<option key=${c}>${c}</option>`)}
+					<option value="all">all</option>
+					${cats.filter((c) => c !== 'all').map((c) => html`<option key=${c} value=${c}>${c}</option>`)}
 				</select>
 			</div>
 			<div class="mm-field">
@@ -621,7 +621,7 @@ function SearchPage({ guard }) {
 			.then(() => { notify.message('Queued ' + sel.size + ' file(s)'); setSel(new Set()); }).catch(() => {});
 	};
 	const unitSel = (v, set) => html`<select class="select-input" value=${v} onChange=${(e) => set(e.target.value)}>
-		${Object.keys(UNITS).map((u) => html`<option key=${u}>${u}</option>`)}</select>`;
+		${Object.keys(UNITS).map((u) => html`<option key=${u} value=${u}>${u}</option>`)}</select>`;
 
 	return html`
 	<div>
@@ -630,7 +630,7 @@ function SearchPage({ guard }) {
 			<div class="mm-field">
 				<label>Type / Availability:</label>
 				<select class="select-input" value=${stype} onChange=${(e) => setStype(e.target.value)}>
-					${['Local', 'Global', 'Kad'].map((t) => html`<option key=${t}>${t}</option>`)}
+					${['Local', 'Global', 'Kad'].map((t) => html`<option key=${t} value=${t}>${t}</option>`)}
 				</select>
 				<input class="text-input" type="number" placeholder="avail" style="width:70px" value=${avail} onInput=${(e) => setAvail(e.target.value)} />
 			</div>
