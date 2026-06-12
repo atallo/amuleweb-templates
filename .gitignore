@@ -8,3 +8,5 @@ templates/mobilemule/onsen-css-components.min.css
 templates/mobilemule/dark-onsen-css-components.min.css
 templates/bootstrap/bootstrap.min.css
 templates/bootstrap/bootstrap-reboot.min.css
+templates/emodernui/bootstrap.min.css
+templates/emodernui/glyphicons-halflings-regular.*

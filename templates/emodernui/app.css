@@ -1,0 +1,61 @@
+/*
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ * Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+ *
+ * app.css -- "emodernui": the few page-level rules the upstream prototypes
+ * declared inline (.top-buffer, login paddings), plus the SPA additions
+ * (app-driven popovers, tree, graph placeholders). All the visual identity
+ * comes from the upstream's own Bootswatch "Flatly" 3.1.1 build.
+ * Origin: https://github.com/vincenzo-petronio/eMuleModernUI
+ */
+
+/* from the upstream prototypes' inline <style> blocks */
+.top-buffer { margin-top: 50px; }
+
+/* ------------------------------------------------------------------ */
+/* SPA additions                                                      */
+/* ------------------------------------------------------------------ */
+
+/* icon-above-label navbar entries (the upstream used eMule's gif icons) */
+.navbar-nav > li > a { text-align: center; }
+.navbar-nav > li > a .glyphicon { font-size: 16px; }
+
+/* status rows under the navbar */
+.statusrows { margin-top: 10px; }
+.statusrows label { font-weight: normal; margin-left: 4px; }
+
+/* app-driven popover menus (per-row server / priority menus) */
+.popmenu-wrap { position: relative; display: inline-block; }
+.popover.popmenu {
+	display: block; position: absolute; top: 100%; left: 0; margin-top: 8px;
+	min-width: 120px; white-space: nowrap;
+}
+.popmenu .popover-content { display: block; padding: 6px 0; }
+.popmenu-item { display: block; padding: 4px 14px; }
+.popmenu-item:hover { background: #ecf0f1; text-decoration: none; }
+
+/* tables */
+.namecell { word-break: break-word; min-width: 220px; }
+.hashcell { font-family: monospace; font-size: 11px; word-break: break-all; }
+.progcell { min-width: 140px; }
+.progcell .progress { margin-bottom: 0; }
+tr.totals th { background: #ecf0f1; }
+
+/* statistics tree */
+.stats-tree, .tree-branch { margin-left: 14px; }
+.stats-tree a.tree-toggle { color: #2c3e50; }
+.tree-item { padding-left: 18px; }
+
+/* graphs / log */
+.graphbox { width: 100%; max-width: 500px; height: 200px; background: #fff; border: 1px solid #ecf0f1; }
+pre.logpre {
+	max-height: 420px; overflow: auto;
+	white-space: pre-wrap; word-break: break-word;
+}
+.reset-link { font-size: 12px; font-weight: normal; }
+
+/* ed2k modal helpers */
+.cat-inline { display: inline-block; width: auto; vertical-align: middle; }
+
+/* panels keep their body floats contained (upstream uses col-xs inside) */
+.panel-body::after { content: ""; display: table; clear: both; }

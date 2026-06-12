@@ -1,0 +1,13 @@
+{
+	"name": "aMule Web Control",
+	"short_name": "aMuleWeb",
+	"description": "aMule web interface (eMuleModernUI template)",
+	"icons": [
+		{ "src": "logo.png", "sizes": "143x64", "type": "image/png", "purpose": "any" }
+	],
+	"start_url": "./",
+	"scope": "./",
+	"display": "standalone",
+	"theme_color": "#2c3e50",
+	"background_color": "#ffffff"
+}

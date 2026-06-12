@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+  SPDX-License-Identifier: GPL-2.0-or-later
+  Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+  Origin: https://github.com/vincenzo-petronio/eMuleModernUI
+-->
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="description" content="Template for aMule Web interface based on HTML5 Boilerplate & Bootstrap" />
+	<title>aMule - Web Control</title>
+
+	<link rel="shortcut icon" href="favicon.ico" />
+	<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+	<link rel="manifest" href="manifest.json" />
+	<meta name="theme-color" content="#2c3e50" />
+
+	<link rel="stylesheet" href="bootstrap.min.css" />
+	<link rel="stylesheet" href="app.css" />
+</head>
+
+<body>
+	<div id="app">
+		<div id="boot" style="padding:60px 16px;text-align:center">
+			<noscript>This control panel requires JavaScript.</noscript>
+			<span id="boot-msg">Loading…</span>
+		</div>
+	</div>
+	<script type="module">
+		import('./app.js').catch((err) => {
+			const el = document.getElementById('boot-msg');
+			if (el) {
+				el.innerHTML =
+					'Could not start the control panel.<br><br><code>' +
+					(err && err.message ? err.message : err) + '</code><br><br>' +
+					'The Preact+HTM module or the Bootswatch CSS may be missing — run ' +
+					'the dependency download script (see the repository dev/ folder).';
+			}
+		});
+	</script>
+</body>
+</html>
