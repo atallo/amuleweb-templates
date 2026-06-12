@@ -89,9 +89,10 @@ amule.example.com {
 ## How it works
 
 amuleweb's embedded PHP dialect is tiny (no `json_encode`, no `include`, only
-a handful of builtins with several sharp edges — they are documented in the
-comments of [`common/api.php`](common/api.php)). The API builds JSON by hand
-and exposes:
+a handful of builtins with several sharp edges). Every limitation and
+interpreter bug that shaped the API is documented in
+[docs/api-php-notes.md](docs/api-php-notes.md) — read it before touching
+[`common/api.php`](common/api.php). The API builds JSON by hand and exposes:
 
 | Method | Route | Purpose |
 |--------|-------|---------|
