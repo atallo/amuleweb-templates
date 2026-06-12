@@ -74,4 +74,28 @@ if (Test-Path $BootstrapTpl) {
     Write-Host "  -> templates\bootstrap\{bootstrap.min.css, bootstrap-reboot.min.css}"
 }
 
+# --- eMuleModernUI's own Bootswatch build (emodernui) -----------------
+# The upstream repository ships the exact Bootswatch "Flatly" 3.1.1 build
+# and Glyphicons fonts the template was designed against; fetch those very
+# files. The font path is rewritten because deployed templates are flat.
+$EmuiRaw = 'https://raw.githubusercontent.com/vincenzo-petronio/eMuleModernUI/master'
+$EmuiCss = Join-Path $VendorDir 'emodernui-bootstrap.min.css'
+Fetch "$EmuiRaw/css/bootswatch/bootstrap.min.css" $EmuiCss
+foreach ($f in @('eot', 'svg', 'ttf', 'woff')) {
+    Fetch "$EmuiRaw/fonts/glyphicons-halflings-regular.$f" (Join-Path $VendorDir "glyphicons-halflings-regular.$f")
+}
+
+$EmuiTpl = Join-Path $Root 'templates\emodernui'
+if (Test-Path $EmuiTpl) {
+    # flatten the font path and drop the Google-Fonts @import (no CDN at
+    # runtime; Lato falls back to the Helvetica/Arial stack of the same rule)
+    $css = (Get-Content $EmuiCss -Raw).Replace('../fonts/', '')
+    $css = $css -replace '@import url\("//fonts\.googleapis\.com[^"]*"\);', ''
+    $css | Set-Content (Join-Path $EmuiTpl 'bootstrap.min.css') -Encoding UTF8 -NoNewline
+    foreach ($f in @('eot', 'svg', 'ttf', 'woff')) {
+        Copy-Item (Join-Path $VendorDir "glyphicons-halflings-regular.$f") $EmuiTpl -Force
+    }
+    Write-Host "  -> templates\emodernui\{bootstrap.min.css, glyphicons fonts}"
+}
+
 Write-Host "Done."

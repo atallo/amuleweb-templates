@@ -75,4 +75,28 @@ if [ -d "${ROOT}/templates/bootstrap" ]; then
 	echo "  -> templates/bootstrap/{bootstrap.min.css, bootstrap-reboot.min.css}"
 fi
 
+# --- eMuleModernUI's own Bootswatch build (emodernui) -----------------
+# The upstream repository ships the exact Bootswatch "Flatly" 3.1.1 build
+# and Glyphicons fonts the template was designed against; fetch those very
+# files. The font path is rewritten because deployed templates are flat.
+EMUI_RAW="https://raw.githubusercontent.com/vincenzo-petronio/eMuleModernUI/master"
+EMUI_CSS="${ROOT}/vendor/emodernui-bootstrap.min.css"
+fetch "${EMUI_RAW}/css/bootswatch/bootstrap.min.css" "${EMUI_CSS}"
+for f in eot svg ttf woff; do
+	fetch "${EMUI_RAW}/fonts/glyphicons-halflings-regular.${f}" \
+		"${ROOT}/vendor/glyphicons-halflings-regular.${f}"
+done
+
+if [ -d "${ROOT}/templates/emodernui" ]; then
+	# flatten the font path and drop the Google-Fonts @import (no CDN at
+	# runtime; Lato falls back to the Helvetica/Arial stack of the same rule)
+	sed -e 's|\.\./fonts/||g' \
+		-e 's|@import url("//fonts.googleapis.com[^"]*");||' \
+		"${EMUI_CSS}" > "${ROOT}/templates/emodernui/bootstrap.min.css"
+	for f in eot svg ttf woff; do
+		cp "${ROOT}/vendor/glyphicons-halflings-regular.${f}" "${ROOT}/templates/emodernui/"
+	done
+	echo "  -> templates/emodernui/{bootstrap.min.css, glyphicons fonts}"
+fi
+
 echo "Done."

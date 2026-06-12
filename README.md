@@ -23,6 +23,7 @@ decoupled architecture:
 | [`dotorg`](templates/dotorg) | Original design ([amule.org](https://amule-org.github.io/) visual identity) | 2026 desktop+mobile panel: brand navbar with live chips, bottom tab bar on phones, light/dark toggle. |
 | [`flattened`](templates/flattened) | Migrated from [marcellozaniboni/amuleweb-flattened-template](https://github.com/marcellozaniboni/amuleweb-flattened-template) (GPL-2.0) | The classic look with flat, lighter graphics; icon-only header with tooltips, reorganized search form. |
 | [`bootstrap`](templates/bootstrap) | Migrated from [pedro77/amuleweb-bootstrap-template](https://github.com/pedro77/amuleweb-bootstrap-template) (GPL-2.0) | Bootstrap 4 UI: dark fixed navbar, SVG icons, responsive lists; jQuery dropped (CSS-only Bootstrap). |
+| [`emodernui`](templates/emodernui) | Migrated from [vincenzo-petronio/eMuleModernUI](https://github.com/vincenzo-petronio/eMuleModernUI) (GPL-2.0, an eMule design) | Bootswatch "Flatly" Bootstrap 3 look: dark navbar, panels, popover menus; eMule features mapped to aMule. |
 
 Each template's README documents its features and embeds its screenshots;
 the images live under [`docs/screenshots/<template>/`](docs/screenshots).
