@@ -86,6 +86,22 @@ Keep this page open if you ever need to touch `api.php`.
     Debugging realistically means dropping a small probe `.php` next to the
     template and reading the aMule log.
 
+## The web server itself
+
+16. **amuleweb is single-threaded — two simultaneous requests can stall
+    it.** Observed live while debugging: firing a second API call before
+    the first one had answered made responses queue up and, under a little
+    pressure (e.g. two pollers or parallel `curl`s), the server stopped
+    answering until the requests timed out. This is a property of amuleweb,
+    not of the PHP dialect, but it dictates how the API must be consumed:
+    **every template in this repository funnels all `fetch` calls through a
+    single-flight serialized queue** (never more than one request in
+    flight) and skips a polling cycle entirely while the previous one is
+    still running. If you write your own client, do the same; also note
+    that the browser fetches the `dyn_<hash>.png` chunk bars and
+    `amule_stats_*.png` graphs in parallel on its own, which amuleweb
+    tolerates because they are tiny — keep API polling serialized anyway.
+
 ## Structural constraints
 
 13. **Anything outside `<?php ?>` is sent to the client**, so `api.php` is
