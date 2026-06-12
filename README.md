@@ -22,6 +22,7 @@ decoupled architecture:
 | [`mobilemule`](templates/mobilemule) | Migrated from [elbowz/mobileMule](https://github.com/elbowz/mobileMule) (GPL-3.0) | Mobile-first UI; jQuery Mobile replaced by Onsen UI CSS components (Theme Roller-compatible); search/settings included. |
 | [`dotorg`](templates/dotorg) | Original design ([amule.org](https://amule-org.github.io/) visual identity) | 2026 desktop+mobile panel: brand navbar with live chips, bottom tab bar on phones, light/dark toggle. |
 | [`flattened`](templates/flattened) | Migrated from [marcellozaniboni/amuleweb-flattened-template](https://github.com/marcellozaniboni/amuleweb-flattened-template) (GPL-2.0) | The classic look with flat, lighter graphics; icon-only header with tooltips, reorganized search form. |
+| [`bootstrap`](templates/bootstrap) | Migrated from [pedro77/amuleweb-bootstrap-template](https://github.com/pedro77/amuleweb-bootstrap-template) (GPL-2.0) | Bootstrap 4 UI: dark fixed navbar, SVG icons, responsive lists; jQuery dropped (CSS-only Bootstrap). |
 
 Each template's README documents its features and embeds its screenshots;
 the images live under [`docs/screenshots/<template>/`](docs/screenshots).
