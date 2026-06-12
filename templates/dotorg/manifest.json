@@ -1,0 +1,14 @@
+{
+	"name": "aMule control panel",
+	"short_name": "aMule",
+	"description": "aMule web interface in the amule.org website style",
+	"start_url": "./",
+	"scope": "./",
+	"display": "standalone",
+	"background_color": "#235787",
+	"theme_color": "#235787",
+	"icons": [
+		{ "src": "icon-48.png", "sizes": "48x48", "type": "image/png", "purpose": "any" },
+		{ "src": "logo.png", "sizes": "any", "type": "image/png", "purpose": "any" }
+	]
+}
