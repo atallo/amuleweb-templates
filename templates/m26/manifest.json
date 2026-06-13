@@ -1,0 +1,13 @@
+{
+	"name": "Amule M26",
+	"short_name": "M26",
+	"description": "aMule web interface (m26 template)",
+	"icons": [
+		{ "src": "favicon.ico", "sizes": "48x48 32x32 16x16", "type": "image/x-icon" }
+	],
+	"start_url": "./",
+	"scope": "./",
+	"display": "standalone",
+	"theme_color": "#2c3e50",
+	"background_color": "#2c3e50"
+}

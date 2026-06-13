@@ -99,4 +99,16 @@ if [ -d "${ROOT}/templates/emodernui" ]; then
 	echo "  -> templates/emodernui/{bootstrap.min.css, glyphicons fonts}"
 fi
 
+# --- amule-m26's Font Awesome build (m26) -----------------------------
+# Single self-contained file (the icon font is embedded as a data URI),
+# fetched from the upstream repository.
+M26_RAW="https://raw.githubusercontent.com/jjling2011/amule-m26/main"
+M26_FA="${ROOT}/vendor/m26-font-awesome-4.7.0.css"
+fetch "${M26_RAW}/public/font-awesome-4.7.0.css" "${M26_FA}"
+
+if [ -d "${ROOT}/templates/m26" ]; then
+	cp "${M26_FA}" "${ROOT}/templates/m26/font-awesome-4.7.0.css"
+	echo "  -> templates/m26/font-awesome-4.7.0.css"
+fi
+
 echo "Done."

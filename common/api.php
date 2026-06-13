@@ -81,6 +81,7 @@ if ($r == "status") {
 	echo ",\"speed_limit_down\":", ($s["speed_limit_down"] + 0);
 	echo ",\"speed_limit_up\":", ($s["speed_limit_up"] + 0);
 	echo ",\"ed2k\":{\"state\":\"", $ed2k_state, "\",\"lowid\":", ($lowid ? "true" : "false");
+	echo ",\"id\":", ($id + 0);
 	echo ",\"server\":\"", jesc($s["serv_name"]), "\"";
 	echo ",\"addr\":\"", jesc($s["serv_addr"]), "\"";
 	echo ",\"users\":", ($s["serv_users"] + 0), "}";
@@ -115,6 +116,7 @@ if ($r == "status") {
 		echo ",\"status\":", ($f->status + 0);
 		echo ",\"prio\":", ($f->prio + 0);
 		echo ",\"prio_auto\":", ($f->prio_auto + 0);
+		echo ",\"link\":\"", jesc($f->link), "\"";
 		echo ",\"category\":", ($f->category + 0), "}";
 		$i = 1;
 	}
