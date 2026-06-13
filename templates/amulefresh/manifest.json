@@ -1,0 +1,13 @@
+{
+	"name": "aMule Web Interface",
+	"short_name": "aMuleFresh",
+	"description": "aMule web interface (amulefresh template)",
+	"icons": [
+		{ "src": "logo.png", "sizes": "143x64", "type": "image/png", "purpose": "any" }
+	],
+	"start_url": "./",
+	"scope": "./",
+	"display": "standalone",
+	"theme_color": "#1e2028",
+	"background_color": "#1a1d29"
+}

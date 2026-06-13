@@ -21,6 +21,9 @@ set -eu
 HTM_VERSION="3.1.1"
 ONSEN_VERSION="2.12.8"
 BOOTSTRAP_VERSION="4.5.0"
+BOOTSTRAP5_VERSION="5.3.2"
+BOOTSTRAP_ICONS_VERSION="1.11.1"
+ANIMATE_VERSION="4.1.1"
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 mkdir -p "${ROOT}/vendor"
@@ -109,6 +112,32 @@ fetch "${M26_RAW}/public/font-awesome-4.7.0.css" "${M26_FA}"
 if [ -d "${ROOT}/templates/m26" ]; then
 	cp "${M26_FA}" "${ROOT}/templates/m26/font-awesome-4.7.0.css"
 	echo "  -> templates/m26/font-awesome-4.7.0.css"
+fi
+
+# --- Bootstrap 5 + Bootstrap Icons + Animate.css (amulefresh) ---------
+# The upstream loaded all three from CDNs; self-host them instead. The
+# Bootstrap Icons CSS font path is flattened (deployed templates have no
+# sub-folders); bootstrap.bundle.js is not needed (the carousel, tooltips
+# and popovers are app-driven).
+BS5_CSS="${ROOT}/vendor/bootstrap-5.min.css"
+BSI_CSS="${ROOT}/vendor/bootstrap-icons.css"
+BSI_WOFF="${ROOT}/vendor/bootstrap-icons.woff"
+BSI_WOFF2="${ROOT}/vendor/bootstrap-icons.woff2"
+ANIMATE_CSS="${ROOT}/vendor/animate.min.css"
+fetch "https://cdn.jsdelivr.net/npm/bootstrap@${BOOTSTRAP5_VERSION}/dist/css/bootstrap.min.css" "${BS5_CSS}"
+fetch "https://cdn.jsdelivr.net/npm/bootstrap-icons@${BOOTSTRAP_ICONS_VERSION}/font/bootstrap-icons.css" "${BSI_CSS}"
+fetch "https://cdn.jsdelivr.net/npm/bootstrap-icons@${BOOTSTRAP_ICONS_VERSION}/font/fonts/bootstrap-icons.woff" "${BSI_WOFF}"
+fetch "https://cdn.jsdelivr.net/npm/bootstrap-icons@${BOOTSTRAP_ICONS_VERSION}/font/fonts/bootstrap-icons.woff2" "${BSI_WOFF2}"
+fetch "https://cdnjs.cloudflare.com/ajax/libs/animate.css/${ANIMATE_VERSION}/animate.min.css" "${ANIMATE_CSS}"
+
+if [ -d "${ROOT}/templates/amulefresh" ]; then
+	cp "${BS5_CSS}" "${ROOT}/templates/amulefresh/bootstrap.min.css"
+	cp "${ANIMATE_CSS}" "${ROOT}/templates/amulefresh/animate.min.css"
+	cp "${BSI_WOFF}" "${ROOT}/templates/amulefresh/bootstrap-icons.woff"
+	cp "${BSI_WOFF2}" "${ROOT}/templates/amulefresh/bootstrap-icons.woff2"
+	# flatten the ./fonts/ path so the font loads from the flat template dir
+	sed 's|\./fonts/||g' "${BSI_CSS}" > "${ROOT}/templates/amulefresh/bootstrap-icons.css"
+	echo "  -> templates/amulefresh/{bootstrap.min.css, bootstrap-icons.css(+woff/woff2), animate.min.css}"
 fi
 
 echo "Done."

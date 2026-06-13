@@ -24,6 +24,9 @@ $ErrorActionPreference = 'Stop'
 $HtmVersion = '3.1.1'
 $OnsenVersion = '2.12.8'
 $BootstrapVersion = '4.5.0'
+$Bootstrap5Version = '5.3.2'
+$BootstrapIconsVersion = '1.11.1'
+$AnimateVersion = '4.1.1'
 
 $Root = Split-Path $PSScriptRoot -Parent
 $VendorDir = Join-Path $Root 'vendor'
@@ -109,6 +112,33 @@ $M26Tpl = Join-Path $Root 'templates\m26'
 if (Test-Path $M26Tpl) {
     Copy-Item $M26Fa (Join-Path $M26Tpl 'font-awesome-4.7.0.css') -Force
     Write-Host "  -> templates\m26\font-awesome-4.7.0.css"
+}
+
+# --- Bootstrap 5 + Bootstrap Icons + Animate.css (amulefresh) ---------
+# The upstream loaded all three from CDNs; self-host them instead. The
+# Bootstrap Icons CSS font path is flattened (deployed templates have no
+# sub-folders); bootstrap.bundle.js is not needed (the carousel, tooltips
+# and popovers are app-driven).
+$Bs5Css = Join-Path $VendorDir 'bootstrap-5.min.css'
+$BsiCss = Join-Path $VendorDir 'bootstrap-icons.css'
+$BsiWoff = Join-Path $VendorDir 'bootstrap-icons.woff'
+$BsiWoff2 = Join-Path $VendorDir 'bootstrap-icons.woff2'
+$AnimateCss = Join-Path $VendorDir 'animate.min.css'
+Fetch "https://cdn.jsdelivr.net/npm/bootstrap@$Bootstrap5Version/dist/css/bootstrap.min.css" $Bs5Css
+Fetch "https://cdn.jsdelivr.net/npm/bootstrap-icons@$BootstrapIconsVersion/font/bootstrap-icons.css" $BsiCss
+Fetch "https://cdn.jsdelivr.net/npm/bootstrap-icons@$BootstrapIconsVersion/font/fonts/bootstrap-icons.woff" $BsiWoff
+Fetch "https://cdn.jsdelivr.net/npm/bootstrap-icons@$BootstrapIconsVersion/font/fonts/bootstrap-icons.woff2" $BsiWoff2
+Fetch "https://cdnjs.cloudflare.com/ajax/libs/animate.css/$AnimateVersion/animate.min.css" $AnimateCss
+
+$FreshTpl = Join-Path $Root 'templates\amulefresh'
+if (Test-Path $FreshTpl) {
+    Copy-Item $Bs5Css (Join-Path $FreshTpl 'bootstrap.min.css') -Force
+    Copy-Item $AnimateCss (Join-Path $FreshTpl 'animate.min.css') -Force
+    Copy-Item $BsiWoff (Join-Path $FreshTpl 'bootstrap-icons.woff') -Force
+    Copy-Item $BsiWoff2 (Join-Path $FreshTpl 'bootstrap-icons.woff2') -Force
+    (Get-Content $BsiCss -Raw).Replace('./fonts/', '') |
+        Set-Content (Join-Path $FreshTpl 'bootstrap-icons.css') -Encoding UTF8 -NoNewline
+    Write-Host "  -> templates\amulefresh\{bootstrap.min.css, bootstrap-icons.css(+woff/woff2), animate.min.css}"
 }
 
 Write-Host "Done."
