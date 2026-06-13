@@ -1,0 +1,188 @@
+/*
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+ *
+ * app.css -- "amulefresh": the upstream's dark color scheme (transcribed
+ * from its inline <style> blocks) expressed as data-theme variables, plus
+ * an added light variant and the page-level rules the SPA needs on top of
+ * Bootstrap 5. The accent green and surface colors match the original.
+ * Origin: https://github.com/dcapape/amulefresh
+ */
+
+/* ---- dark theme (the original aMuleFresh look) -------------------- */
+:root,
+[data-theme="dark"] {
+	--bg-primary: #1a1d29;
+	--bg-secondary: #252836;
+	--bg-navbar: #1e2028;
+	--accent-color: #076351;
+	--accent-hover: #00b894;
+	--text-primary: #e4e6eb;
+	--text-secondary: #b0b3b8;
+	--row-border: rgba(255, 255, 255, 0.06);
+	--row-hover: rgba(255, 255, 255, 0.04);
+}
+
+/* ---- light variant (added on top) -------------------------------- */
+[data-theme="light"] {
+	--bg-primary: #f3f5f8;
+	--bg-secondary: #ffffff;
+	--bg-navbar: #0f5a4b;
+	--accent-color: #0a7d67;
+	--accent-hover: #00b894;
+	--text-primary: #1a1d29;
+	--text-secondary: #5a6270;
+	--row-border: rgba(0, 0, 0, 0.08);
+	--row-hover: rgba(0, 0, 0, 0.03);
+}
+
+body {
+	padding-top: 70px;
+	background-color: var(--bg-primary);
+	color: var(--text-primary);
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* navbar */
+.navbar {
+	background-color: var(--bg-navbar) !important;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+	padding: 0.5rem 0;
+}
+.navbar-brand {
+	color: #fff !important;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding-left: 0.5rem;
+}
+.navbar-brand:hover { color: var(--accent-hover) !important; }
+.logo-nav { height: 40px; width: 40px; }
+.navbar-link { color: #cfd2d6 !important; text-decoration: none; transition: all 0.2s ease; }
+.navbar-link:hover, .navbar-link.active { color: #fff !important; border-color: var(--accent-color); }
+.navbar-link.active { background-color: var(--accent-color); }
+
+/* cards */
+.card {
+	background-color: var(--bg-secondary);
+	border: 0;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+	margin-bottom: 1.5rem;
+	color: var(--text-primary);
+}
+.card-header {
+	background-color: var(--accent-color);
+	border: 0;
+	border-radius: 12px 12px 0 0 !important;
+	padding: 0.75rem 1rem;
+}
+.card-header h4 { color: #fff; margin: 0; font-weight: 600; font-size: 1.1rem; }
+.card-body { padding: 1.25rem; }
+
+/* main + command panel */
+.amf-main { max-width: 1320px; margin: 0 auto; padding-top: 1rem; padding-bottom: 90px; }
+.panel-tasks {
+	background-color: var(--bg-secondary);
+	border-radius: 12px;
+	padding: 1rem;
+	margin-bottom: 1.5rem;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* tables */
+.table { color: var(--text-primary); margin-bottom: 0; --bs-table-bg: transparent; }
+.table thead th { color: var(--accent-hover); border-bottom: 2px solid var(--accent-color); white-space: nowrap; }
+.table thead th a { color: var(--accent-hover); text-decoration: none; }
+.table thead th a:hover { color: var(--text-primary); }
+.table td { border-color: var(--row-border); vertical-align: middle; }
+tr.amf-row { transition: background 0.15s ease; border-left: 3px solid transparent; }
+tr.amf-row:hover > td { background-color: var(--row-hover); }
+tr.amf-row.selected { border-left-color: var(--accent-hover); font-weight: 600; }
+tr.amf-row.selected > td { background-color: rgba(0, 184, 148, 0.08); }
+tr.amf-total td { color: var(--text-secondary); border-top: 2px solid var(--row-border); }
+
+/* forms */
+.form-control, .form-select {
+	background-color: var(--bg-secondary);
+	border: 1px solid var(--row-border);
+	color: var(--text-primary);
+	border-radius: 8px;
+}
+.form-control:focus, .form-select:focus {
+	background-color: var(--bg-secondary);
+	border-color: var(--accent-color);
+	color: var(--text-primary);
+	box-shadow: 0 0 0 0.2rem rgba(0, 184, 148, 0.2);
+}
+.form-control::placeholder { color: var(--text-secondary); }
+.form-check-input:checked { background-color: var(--accent-color); border-color: var(--accent-color); }
+
+/* buttons */
+.btn-primary, .btn-success {
+	background-color: var(--accent-color);
+	border-color: var(--accent-color);
+	border-radius: 8px;
+	color: #fff;
+}
+.btn-primary:hover, .btn-success:hover {
+	background-color: var(--accent-hover);
+	border-color: var(--accent-hover);
+	color: #fff;
+}
+.btn-outline-light { border-radius: 8px; }
+.bi { color: inherit; }
+
+/* in the light variant the toolbar/card buttons sit on white surfaces,
+   so the white "outline-light" buttons need a dark outline there */
+[data-theme="light"] .panel-tasks .btn-outline-light,
+[data-theme="light"] .card .btn-outline-light {
+	color: var(--text-primary);
+	border-color: var(--text-secondary);
+}
+[data-theme="light"] .panel-tasks .btn-outline-light:hover,
+[data-theme="light"] .card .btn-outline-light:hover {
+	color: #fff;
+	background-color: var(--accent-color);
+	border-color: var(--accent-color);
+}
+
+/* progress */
+.progress { background-color: var(--bg-primary); border-radius: 6px; }
+.progress-bar { background-color: var(--accent-color); }
+
+/* statistics */
+.amf-tree { font-size: 0.9rem; max-height: 450px; overflow: auto; }
+.amf-branch { padding: 1px 0; }
+.amf-leaf { padding: 1px 0 1px 1.2rem; color: var(--text-secondary); }
+.amf-tree .bi { color: var(--accent-hover); margin-right: 2px; }
+.graphbox { width: 100%; height: 280px; background: var(--bg-primary); border-radius: 8px; }
+.amf-carousel img { background: var(--bg-primary); max-height: 320px; object-fit: contain; }
+
+/* log */
+pre.logpre {
+	background: var(--bg-primary); color: var(--text-primary);
+	font-family: 'Courier New', monospace; font-size: 0.85rem;
+	white-space: pre-wrap; word-break: break-word;
+	margin: 0; padding: 0.75rem; border-radius: 8px;
+	height: 380px; overflow: auto;
+}
+pre.logpre.small { height: 200px; }
+.reset-link { color: #fff; font-size: 0.8rem; font-weight: normal; margin-left: 0.5rem; }
+
+/* ed2k footer */
+#footer {
+	position: fixed; left: 0; right: 0; bottom: 0; z-index: 1020;
+	background-color: var(--bg-navbar);
+	padding: 0.5rem 1rem;
+	box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
+}
+#footer .small { color: var(--text-secondary); }
+#footer b { color: var(--accent-hover); }
+
+@media (max-width: 991px) {
+	#footer { position: static; }
+	.amf-main { padding-bottom: 1rem; }
+	.navbar-nav .btn-group { flex-wrap: wrap; }
+}

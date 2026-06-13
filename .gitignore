@@ -11,3 +11,8 @@ templates/bootstrap/bootstrap-reboot.min.css
 templates/emodernui/bootstrap.min.css
 templates/emodernui/glyphicons-halflings-regular.*
 templates/m26/font-awesome-4.7.0.css
+templates/amulefresh/bootstrap.min.css
+templates/amulefresh/bootstrap-icons.css
+templates/amulefresh/bootstrap-icons.woff
+templates/amulefresh/bootstrap-icons.woff2
+templates/amulefresh/animate.min.css

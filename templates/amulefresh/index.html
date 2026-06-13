@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!--
+  SPDX-License-Identifier: GPL-3.0-or-later
+  Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+  Origin: https://github.com/dcapape/amulefresh
+-->
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>aMule - Web Interface</title>
+	<link rel="icon" href="favicon.ico" />
+	<link rel="manifest" href="manifest.json" />
+	<meta name="theme-color" content="#1e2028" />
+	<link rel="stylesheet" href="bootstrap.min.css" />
+	<link rel="stylesheet" href="bootstrap-icons.css" />
+	<link rel="stylesheet" href="animate.min.css" />
+	<link rel="stylesheet" href="app.css" />
+	<script>
+		// pre-paint theme (dark by default, like the original)
+		(function () {
+			try {
+				var q = new URLSearchParams(location.search).get('theme');
+				var t = (q === 'dark' || q === 'light') ? q : localStorage.getItem('amulefresh-theme');
+				if (t !== 'light') t = 'dark';
+				document.documentElement.setAttribute('data-theme', t);
+				document.documentElement.setAttribute('data-bs-theme', t);
+			} catch (e) {
+				document.documentElement.setAttribute('data-theme', 'dark');
+				document.documentElement.setAttribute('data-bs-theme', 'dark');
+			}
+		})();
+	</script>
+</head>
+
+<body class="animate__animated animate__fadeIn" style="animation-duration: 0.8s">
+	<div id="app">
+		<div id="boot" style="padding:80px 16px;text-align:center">
+			<noscript>This control panel requires JavaScript.</noscript>
+			<span id="boot-msg">Loading…</span>
+		</div>
+	</div>
+	<script type="module">
+		import('./app.js').catch((err) => {
+			const el = document.getElementById('boot-msg');
+			if (el) {
+				el.innerHTML =
+					'Could not start the control panel.<br><br><code>' +
+					(err && err.message ? err.message : err) + '</code><br><br>' +
+					'The Preact+HTM module or the Bootstrap/Icons CSS may be missing — run ' +
+					'the dependency download script (see the repository dev/ folder).';
+			}
+		});
+	</script>
+</body>
+</html>

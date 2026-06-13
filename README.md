@@ -25,6 +25,7 @@ decoupled architecture:
 | [`bootstrap`](templates/bootstrap) | Migrated from [pedro77/amuleweb-bootstrap-template](https://github.com/pedro77/amuleweb-bootstrap-template) (GPL-2.0) | Bootstrap 4 UI: dark fixed navbar, SVG icons, responsive lists; jQuery dropped (CSS-only Bootstrap). |
 | [`emodernui`](templates/emodernui) | Migrated from [vincenzo-petronio/eMuleModernUI](https://github.com/vincenzo-petronio/eMuleModernUI) (GPL-2.0, an eMule design) | Bootswatch "Flatly" Bootstrap 3 look: dark navbar, panels, popover menus; eMule features mapped to aMule. |
 | [`m26`](templates/m26) | Migrated from [jjling2011/amule-m26](https://github.com/jjling2011/amule-m26) (GPL-2.0) | Sidebar UI with light/dark themes and a filter mini-language; patched-backend features documented, not implemented. |
+| [`amulefresh`](templates/amulefresh) | Migrated from [dcapape/amulefresh](https://github.com/dcapape/amulefresh) (GPL-3.0) | Bootstrap 5.3 dark re-skin: brand navbar, green-accent cards, stats carousel; light theme variant added. |
 
 Each template's README documents its features and embeds its screenshots;
 the images live under [`docs/screenshots/<template>/`](docs/screenshots).
