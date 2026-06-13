@@ -18,13 +18,13 @@
 	const cats = ['all', 'Movies', 'Music', 'Software'];
 
 	const downloads = [
-		{ hash: 'a'.repeat(32), name: 'Ubuntu 26.04 LTS Desktop amd64.iso', size: 4900000000, size_done: 3650000000, size_xfer: 3650000000, speed: 1280000, src_count: 312, src_count_xfer: 24, src_count_not_curr: 40, src_count_a4af: 8, status: 0, prio: 1, prio_auto: 1, category: 3 },
-		{ hash: 'b'.repeat(32), name: 'Big Buck Bunny (2008) 1080p.mkv', size: 1280000000, size_done: 1280000000, size_xfer: 0, speed: 0, src_count: 95, src_count_xfer: 0, src_count_not_curr: 0, src_count_a4af: 0, status: 0, prio: 2, prio_auto: 0, category: 1 },
-		{ hash: 'c'.repeat(32), name: 'Some.Linux.Distro.netinst.iso', size: 780000000, size_done: 120000000, size_xfer: 120000000, speed: 0, src_count: 4, src_count_xfer: 0, src_count_not_curr: 1, src_count_a4af: 0, status: 7, prio: 0, prio_auto: 0, category: 0 },
-		{ hash: 'd'.repeat(32), name: 'public-domain-album-FLAC.zip', size: 320000000, size_done: 64000000, size_xfer: 64000000, speed: 256000, src_count: 41, src_count_xfer: 6, src_count_not_curr: 5, src_count_a4af: 2, status: 0, prio: 5, prio_auto: 1, category: 2 },
+		{ hash: 'a'.repeat(32), name: 'Ubuntu 26.04 LTS Desktop amd64.iso', size: 4900000000, link: 'ed2k://|file|Ubuntu 26.04 LTS Desktop amd64.iso|4900000000|' + ('a'.repeat(32)) + '|/', size_done: 3650000000, size_xfer: 3650000000, speed: 1280000, src_count: 312, src_count_xfer: 24, src_count_not_curr: 40, src_count_a4af: 8, status: 0, prio: 1, prio_auto: 1, category: 3 },
+		{ hash: 'b'.repeat(32), name: 'Big Buck Bunny (2008) 1080p.mkv', size: 1280000000, link: 'ed2k://|file|Big Buck Bunny (2008) 1080p.mkv|1280000000|' + ('b'.repeat(32)) + '|/', size_done: 1280000000, size_xfer: 0, speed: 0, src_count: 95, src_count_xfer: 0, src_count_not_curr: 0, src_count_a4af: 0, status: 0, prio: 2, prio_auto: 0, category: 1 },
+		{ hash: 'c'.repeat(32), name: 'Some.Linux.Distro.netinst.iso', size: 780000000, link: 'ed2k://|file|Some.Linux.Distro.netinst.iso|780000000|' + ('c'.repeat(32)) + '|/', size_done: 120000000, size_xfer: 120000000, speed: 0, src_count: 4, src_count_xfer: 0, src_count_not_curr: 1, src_count_a4af: 0, status: 7, prio: 0, prio_auto: 0, category: 0 },
+		{ hash: 'd'.repeat(32), name: 'public-domain-album-FLAC.zip', size: 320000000, link: 'ed2k://|file|public-domain-album-FLAC.zip|320000000|' + ('d'.repeat(32)) + '|/', size_done: 64000000, size_xfer: 64000000, speed: 256000, src_count: 41, src_count_xfer: 6, src_count_not_curr: 5, src_count_a4af: 2, status: 0, prio: 5, prio_auto: 1, category: 2 },
 		// Empty name: amuleweb builds with a C-locale container export "" for
 		// names with non-ASCII chars; the UI must fall back to the hash.
-		{ hash: 'E7A1B2C3D4E5F60718293A4B5C6D7E8F', name: '', size: 1500000000, size_done: 300000000, size_xfer: 300000000, speed: 64000, src_count: 9, src_count_xfer: 2, src_count_not_curr: 1, src_count_a4af: 0, status: 0, prio: 1, prio_auto: 1, category: 0 },
+		{ hash: 'E7A1B2C3D4E5F60718293A4B5C6D7E8F', name: '', size: 1500000000, link: 'ed2k://|file|unnamed|1500000000|' + ('E7A1B2C3D4E5F60718293A4B5C6D7E8F') + '|/', size_done: 300000000, size_xfer: 300000000, speed: 64000, src_count: 9, src_count_xfer: 2, src_count_not_curr: 1, src_count_a4af: 0, status: 0, prio: 1, prio_auto: 1, category: 0 },
 	];
 	const uploads = [
 		{ name: 'Ubuntu 26.04 LTS Desktop amd64.iso', user_name: 'peer_42', xfer_up: 18000000, xfer_down: 240000, xfer_speed: 92000 },
@@ -42,9 +42,9 @@
 		{ name: '', desc: 'Community server', addr: '9.10.11.12:4661', ip: 151653132, port: 4661, users: 9211, maxusers: 20000, files: 2100000 },
 	];
 	const results = [
-		{ hash: '1'.repeat(32), name: 'Cosmos.Laundromat.2015.1080p.mkv', size: 1600000000, sources: 540, present: false },
-		{ hash: '2'.repeat(32), name: 'Sintel.2010.1080p.BluRay.mkv', size: 1100000000, sources: 320, present: true },
-		{ hash: '3'.repeat(32), name: 'Tears.of.Steel.1080p.mkv', size: 740000000, sources: 180, present: false },
+		{ hash: '1'.repeat(32), name: 'Cosmos.Laundromat.2015.1080p.mkv', size: 1600000000, link: 'ed2k://|file|Cosmos.Laundromat.2015.1080p.mkv|1600000000|' + ('1'.repeat(32)) + '|/', sources: 540, present: false },
+		{ hash: '2'.repeat(32), name: 'Sintel.2010.1080p.BluRay.mkv', size: 1100000000, link: 'ed2k://|file|Sintel.2010.1080p.BluRay.mkv|1100000000|' + ('2'.repeat(32)) + '|/', sources: 320, present: true },
+		{ hash: '3'.repeat(32), name: 'Tears.of.Steel.1080p.mkv', size: 740000000, link: 'ed2k://|file|Tears.of.Steel.1080p.mkv|740000000|' + ('3'.repeat(32)) + '|/', sources: 180, present: false },
 	];
 	const options = {
 		nick: 'http_user', categories: cats,
@@ -64,7 +64,7 @@
 		return {
 			version: '2.3.3-mock', guest: false, auto_refresh: 2,
 			speed_down: Math.round(down), speed_up: Math.round(up), speed_limit_down: 0, speed_limit_up: 50000,
-			ed2k: { state: 'connected', lowid: false, server: 'eMule Security No1', addr: '1.2.3.4:4242', users: 84210 },
+			ed2k: { state: 'connected', lowid: false, id: 81258542, server: 'eMule Security No1', addr: '1.2.3.4:4242', users: 84210 },
 			kad: { connected: true, firewalled: false }, categories: cats,
 		};
 	}

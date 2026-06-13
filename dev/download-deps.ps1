@@ -98,4 +98,17 @@ if (Test-Path $EmuiTpl) {
     Write-Host "  -> templates\emodernui\{bootstrap.min.css, glyphicons fonts}"
 }
 
+# --- amule-m26's Font Awesome build (m26) -----------------------------
+# Single self-contained file (the icon font is embedded as a data URI),
+# fetched from the upstream repository.
+$M26Raw = 'https://raw.githubusercontent.com/jjling2011/amule-m26/main'
+$M26Fa = Join-Path $VendorDir 'm26-font-awesome-4.7.0.css'
+Fetch "$M26Raw/public/font-awesome-4.7.0.css" $M26Fa
+
+$M26Tpl = Join-Path $Root 'templates\m26'
+if (Test-Path $M26Tpl) {
+    Copy-Item $M26Fa (Join-Path $M26Tpl 'font-awesome-4.7.0.css') -Force
+    Write-Host "  -> templates\m26\font-awesome-4.7.0.css"
+}
+
 Write-Host "Done."
