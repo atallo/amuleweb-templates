@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!--
+  SPDX-License-Identifier: GPL-3.0-or-later
+  Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+  ec-mobile prototype: a mobile-first aMule UI talking to aMule's EC
+  protocol through the Python proxy in ../server.py (vendored jamule client).
+-->
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+	<meta name="theme-color" content="#11151c" />
+	<title>aMule EC</title>
+	<link rel="stylesheet" href="app.css" />
+</head>
+<body>
+	<header class="topbar">
+		<strong class="brand">aMule</strong>
+		<span id="conn" class="conn" title="connection">…</span>
+	</header>
+
+	<main id="view" class="view">
+		<p class="muted" style="padding:1rem">Loading…</p>
+	</main>
+
+	<nav class="tabbar">
+		<a href="#status" data-tab="status"><span class="ico">◍</span><span>Status</span></a>
+		<a href="#transfers" data-tab="transfers"><span class="ico">↓</span><span>Transfers</span></a>
+		<a href="#shared" data-tab="shared"><span class="ico">⇪</span><span>Shared</span></a>
+		<a href="#search" data-tab="search"><span class="ico">⌕</span><span>Search</span></a>
+	</nav>
+
+	<script src="app.js"></script>
+</body>
+</html>
