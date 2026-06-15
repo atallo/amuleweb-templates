@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!--
+  SPDX-License-Identifier: GPL-3.0-or-later
+  Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+  js-ec demo: a mobile-first aMule UI driven entirely by the JavaScript EC
+  client (/ec). The only server-side piece is relay.py, a dumb WebSocket<->TCP
+  byte pipe. All EC framing/tags/auth/zlib happen here in the browser.
+-->
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+	<meta name="theme-color" content="#11151c" />
+	<title>aMule EC (JS)</title>
+	<link rel="stylesheet" href="/demo/app.css" />
+</head>
+<body>
+	<header class="topbar">
+		<strong class="brand">aMule<span class="js">·JS EC</span></strong>
+		<span id="conn" class="conn">offline</span>
+	</header>
+
+	<main id="view" class="view"></main>
+
+	<nav id="tabbar" class="tabbar" hidden>
+		<a href="#status" data-tab="status"><span class="ico">◍</span><span>Status</span></a>
+		<a href="#transfers" data-tab="transfers"><span class="ico">↓</span><span>Transfers</span></a>
+		<a href="#search" data-tab="search"><span class="ico">⌕</span><span>Search</span></a>
+	</nav>
+
+	<script type="module" src="/demo/app.js"></script>
+</body>
+</html>
