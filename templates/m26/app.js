@@ -173,10 +173,30 @@ function sortRows(rows, key, dirDesc, strKeys) {
 }
 
 function copyToClipboard(text) {
+	// The async Clipboard API is only exposed in a secure context (HTTPS or
+	// localhost); amuleweb serves plain HTTP, so fall back to the legacy
+	// execCommand path, which works in insecure contexts too.
 	if (navigator.clipboard && navigator.clipboard.writeText) {
-		return navigator.clipboard.writeText(text).then(() => true, () => false);
+		return navigator.clipboard.writeText(text).then(() => true, () => execCopyFallback(text));
 	}
-	return Promise.resolve(false);
+	return Promise.resolve(execCopyFallback(text));
+}
+function execCopyFallback(text) {
+	try {
+		const ta = document.createElement('textarea');
+		ta.value = text;
+		ta.setAttribute('readonly', '');
+		ta.style.position = 'fixed';
+		ta.style.top = '-1000px';
+		ta.style.opacity = '0';
+		document.body.appendChild(ta);
+		ta.select();
+		const ok = document.execCommand('copy');
+		document.body.removeChild(ta);
+		return ok;
+	} catch (e) {
+		return false;
+	}
 }
 
 const Fa = ({ name, title }) => html`<i class=${'fa fa-' + name} aria-hidden="true" title=${title || ''}></i>`;
