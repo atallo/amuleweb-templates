@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--
+  SPDX-License-Identifier: GPL-3.0-or-later
+  Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+-->
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="theme-color" content="#0c52e0" />
+	<title>aMule</title>
+	<link rel="icon" href="favicon.ico" />
+	<link rel="manifest" href="manifest.json" />
+	<link rel="stylesheet" href="app.css" />
+</head>
+<body>
+	<div id="app">
+		<div style="padding:40px;text-align:center;color:#fff;font-family:Tahoma,sans-serif">
+			<noscript>This control panel requires JavaScript.</noscript>
+			<span id="boot-msg">Loading aMule…</span>
+		</div>
+	</div>
+	<script type="module">
+		import('./app.js').catch((err) => {
+			const el = document.getElementById('boot-msg');
+			if (el) el.innerHTML = 'Could not start: <code>' + (err && err.message ? err.message : err) +
+				'</code><br>Run the dependency download script (see dev/).';
+		});
+	</script>
+</body>
+</html>

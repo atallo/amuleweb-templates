@@ -26,6 +26,7 @@ decoupled architecture:
 | [`emodernui`](templates/emodernui) | Migrated from [vincenzo-petronio/eMuleModernUI](https://github.com/vincenzo-petronio/eMuleModernUI) (GPL-2.0, an eMule design) | Bootswatch "Flatly" Bootstrap 3 look: dark navbar, panels, popover menus; eMule features mapped to aMule. |
 | [`m26`](templates/m26) | Migrated from [jjling2011/amule-m26](https://github.com/jjling2011/amule-m26) (GPL-2.0) | Sidebar UI with light/dark themes and a filter mini-language; patched-backend features documented, not implemented. |
 | [`amulefresh`](templates/amulefresh) | Migrated from [dcapape/amulefresh](https://github.com/dcapape/amulefresh) (GPL-3.0) | Bootstrap 5.3 dark re-skin: brand navbar, green-accent cards, stats carousel; light theme variant added. |
+| [`xpdesktop`](templates/xpdesktop) | Original design (recreation of the aMule desktop client) | The aMule desktop app as it looked on Windows XP ("Luna"): blue title bar, Tahoma, toolbar, listviews, Preferences dialog. |
 
 Each template's README documents its features and embeds its screenshots;
 the images live under [`docs/screenshots/<template>/`](docs/screenshots).

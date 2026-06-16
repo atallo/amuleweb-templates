@@ -1,0 +1,13 @@
+{
+	"name": "aMule (xpdesktop)",
+	"short_name": "aMule",
+	"description": "aMule web interface styled as the desktop client on Windows XP",
+	"icons": [
+		{ "src": "logo.png", "sizes": "143x64", "type": "image/png", "purpose": "any" }
+	],
+	"start_url": "./",
+	"scope": "./",
+	"display": "standalone",
+	"theme_color": "#0c52e0",
+	"background_color": "#3f6fb5"
+}
