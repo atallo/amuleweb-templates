@@ -179,7 +179,7 @@ function ChunkBar({ hash, done, size }) {
 /* Transfers                                                            */
 /* ==================================================================== */
 
-function Transfers({ data, guest, act, status }) {
+function Transfers({ data, guest, act, status, confirm }) {
 	const sel = useSel();
 	const sort = useSort('name', 1);
 	const [fStatus, setFStatus] = useState('All');
@@ -207,10 +207,10 @@ function Transfers({ data, guest, act, status }) {
 	const tot = downloads.reduce((a, f) => ({ size: a.size + Number(f.size), done: a.done + Number(f.size_done), speed: a.speed + Number(f.speed) }), { size: 0, done: 0, speed: 0 });
 	const utot = uploads.reduce((a, f) => ({ up: a.up + Number(f.xfer_up), dn: a.dn + Number(f.xfer_down), speed: a.speed + Number(f.xfer_speed) }), { up: 0, dn: 0, speed: 0 });
 
-	const cmd = (c) => {
+	const cmd = async (c) => {
 		const list = sel.list();
 		if (!list.length) return;
-		if (c === 'cancel' && !confirm('Delete (cancel) the selected download(s)?')) return;
+		if (c === 'cancel' && !(await confirm('Delete (cancel) the selected download(s)?', { danger: true, ok: 'Delete' }))) return;
 		act('dload_cmd', { cmd: c, hashes: list.join(',') });
 		if (c === 'cancel') sel.clear();
 	};
@@ -683,7 +683,7 @@ function Settings({ guest, act }) {
 /* Log                                                                  */
 /* ==================================================================== */
 
-function Log() {
+function Log({ confirm }) {
 	const [log, setLog] = useState('');
 	const [srv, setSrv] = useState('');
 	// log/serverinfo are served as plain text (see api.php).
@@ -695,13 +695,13 @@ function Log() {
 		<div class="card">
 			<h2>aMule log<span class="grow"></span>
 				<button class="btn sm" onClick=${() => loadLog(0)}>Refresh</button>
-				<button class="btn sm danger" onClick=${() => confirm('Reset the aMule log?') && loadLog(1)}>Reset</button></h2>
+				<button class="btn sm danger" onClick=${async () => { if (await confirm('Reset the aMule log?', { danger: true, ok: 'Reset' })) loadLog(1); }}>Reset</button></h2>
 			<div class="card-body"><pre class="logbox">${log || 'empty'}</pre></div>
 		</div>
 		<div class="card">
 			<h2>Server info<span class="grow"></span>
 				<button class="btn sm" onClick=${() => loadSrv(0)}>Refresh</button>
-				<button class="btn sm danger" onClick=${() => confirm('Reset server info?') && loadSrv(1)}>Reset</button></h2>
+				<button class="btn sm danger" onClick=${async () => { if (await confirm('Reset server info?', { danger: true, ok: 'Reset' })) loadSrv(1); }}>Reset</button></h2>
 			<div class="card-body"><pre class="logbox">${srv || 'empty'}</pre></div>
 		</div>
 	</div>`;
@@ -725,6 +725,26 @@ const initialTab = () => {
 	return TABS.some((t) => t[0] === h) ? h : 'transfers';
 };
 
+// Themed confirmation dialog (replaces window.confirm; matches the card look).
+function ConfirmDialog({ msg, danger, okLabel, onCancel, onOk }) {
+	useEffect(() => {
+		const onKey = (e) => { if (e.key === 'Escape') onCancel(); else if (e.key === 'Enter') onOk(); };
+		document.addEventListener('keydown', onKey);
+		return () => document.removeEventListener('keydown', onKey);
+	}, [onCancel, onOk]);
+	return html`
+	<div class="modal-backdrop" onClick=${onCancel}>
+		<div class="modal card" role="dialog" aria-modal="true" onClick=${(e) => e.stopPropagation()}>
+			<div class="modal-body">${msg}</div>
+			<div class="modal-actions">
+				<button class="btn" onClick=${onCancel}>Cancel</button>
+				<button class=${'btn ' + (danger ? 'danger-solid' : 'primary')}
+					ref=${(el) => el && el.focus()} onClick=${onOk}>${okLabel || 'OK'}</button>
+			</div>
+		</div>
+	</div>`;
+}
+
 function App() {
 	const [tab, setTab] = useState(initialTab);
 	const [refreshMs, setRefreshMs] = useState(2000);
@@ -741,6 +761,13 @@ function App() {
 		setToasts((t) => t.concat({ id, msg, err }));
 		setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 3200);
 	}, []);
+
+	// Themed replacement for window.confirm: returns a Promise<boolean>.
+	const [confirmState, setConfirmState] = useState(null); // { msg, danger, ok, resolve }
+	const confirm = useCallback((msg, opts) => new Promise((resolve) => {
+		setConfirmState({ msg, danger: !!(opts && opts.danger), ok: opts && opts.ok, resolve });
+	}), []);
+	const resolveConfirm = (result) => setConfirmState((c) => { if (c) c.resolve(result); return null; });
 
 	// One serialized poll cycle: status, then (if any) the active view's data.
 	// `force` skips the hidden-tab guard: explicit loads (mount, tab change,
@@ -799,7 +826,7 @@ function App() {
 	};
 
 	let view;
-	const vp = { data, guest, act, status, tick };
+	const vp = { data, guest, act, status, tick, confirm };
 	if (tab === 'transfers') view = html`<${Transfers} ...${vp} />`;
 	else if (tab === 'search') view = html`<${Search} ...${vp} />`;
 	else if (tab === 'shared') view = html`<${Shared} ...${vp} />`;
@@ -807,7 +834,7 @@ function App() {
 	else if (tab === 'kad') view = html`<${Kad} ...${vp} />`;
 	else if (tab === 'stats') view = html`<${Stats} tick=${tick} />`;
 	else if (tab === 'settings') view = html`<${Settings} guest=${guest} act=${act} />`;
-	else if (tab === 'log') view = html`<${Log} />`;
+	else if (tab === 'log') view = html`<${Log} confirm=${confirm} />`;
 
 	const ed2k = (status && status.ed2k) || { state: 'disconnected' };
 	const kad = (status && status.kad) || { connected: false };
@@ -850,6 +877,9 @@ function App() {
 		<div class="toast-wrap">
 			${toasts.map((t) => html`<div key=${t.id} class=${'toast' + (t.err ? ' err' : '')}>${t.msg}</div>`)}
 		</div>
+
+		${confirmState ? html`<${ConfirmDialog} msg=${confirmState.msg} danger=${confirmState.danger} okLabel=${confirmState.ok}
+			onCancel=${() => resolveConfirm(false)} onOk=${() => resolveConfirm(true)} />` : ''}
 	</div>`;
 }
 
