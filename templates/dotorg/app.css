@@ -264,6 +264,23 @@ pre.logbox {
 }
 html.dark .banner { color: #ffd166; }
 
+/* confirmation dialog (replaces window.confirm) */
+.modal-backdrop {
+	position: fixed; inset: 0; z-index: 110; padding: 16px;
+	background: rgba(0, 0, 0, .5);
+	display: flex; align-items: center; justify-content: center;
+	animation: tin .12s ease-out;
+}
+.modal {
+	width: 400px; max-width: 100%;
+	background: var(--surface); color: var(--text);
+	border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-md);
+}
+.modal-body { padding: 20px 20px 6px; font-size: 14px; line-height: 1.5; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 20px 18px; }
+.btn.danger-solid { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn.danger-solid:hover:not(:disabled) { filter: brightness(1.06); }
+
 .toast-wrap { position: fixed; right: 16px; bottom: calc(var(--bottnav-h) + 14px); display: flex; flex-direction: column; gap: 8px; z-index: 90; }
 .toast {
 	background: #303846; color: #fff; padding: 10px 15px;
