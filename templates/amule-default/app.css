@@ -138,6 +138,15 @@ pre.logpre.small { height: 200px; }
 /* guest notice */
 .guestmsg { font-weight: bold; font-size: 12px; }
 
+/* The rounded-frame border cells (24px corners + the tab_top/tab_bottom
+   strips) hold only a spacer, but their default 12px line-box made the top
+   and bottom rows 27px tall while the art is 24px -- the 24px background
+   then repeated, showing a thin seam line above/below every framed box.
+   Zeroing the line-box collapses each border row back to the art's height. */
+.boxframe td[width="24"],
+.boxframe td[background*="tab_top"],
+.boxframe td[background*="tab_bottom"] { line-height: 0; font-size: 0; }
+
 /* ------------------------------------------------------------------ */
 /* Mobile usability (desktop look untouched above 820px)              */
 /* ------------------------------------------------------------------ */
