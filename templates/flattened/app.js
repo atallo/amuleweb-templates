@@ -248,7 +248,7 @@ function Footer({ status, guard }) {
 /* DOWNLOAD / UPLOAD                                                    */
 /* ==================================================================== */
 
-function DownloadView({ data, status, guard, refresh }) {
+function DownloadView({ data, status, guard, refresh, confirm }) {
 	const sel = useSel();
 	const sort = useSort('', 1);
 	const [fStatus, setFStatus] = useState('all');
@@ -283,9 +283,9 @@ function DownloadView({ data, status, guard, refresh }) {
 		up: a.up + Number(f.xfer_up), dn: a.dn + Number(f.xfer_down), speed: a.speed + Number(f.xfer_speed),
 	}), { up: 0, dn: 0, speed: 0 });
 
-	const cmd = (c) => {
+	const cmd = async (c) => {
 		if (!guard()) return;
-		if (c === 'cancel' && !confirm('Delete selected files ?')) return;
+		if (c === 'cancel' && !(await confirm('Delete selected files?', { danger: true, ok: 'Delete' }))) return;
 		const list = sel.list();
 		if (!list.length) return;
 		apiPost('dload_cmd', { cmd: c, hashes: list.join(',') }).then(refresh).catch(() => {});
@@ -860,7 +860,7 @@ function PrefsView({ status, guard }) {
 /* AMULE LOG                                                            */
 /* ==================================================================== */
 
-function LogView() {
+function LogView({ confirm }) {
 	const [log, setLog] = useState('');
 	const [srv, setSrv] = useState('');
 	const loadLog = useCallback((reset) => apiText('log', reset ? { reset: 1 } : {}).then(setLog).catch(() => {}), []);
@@ -872,13 +872,13 @@ function LogView() {
 			<tr valign="top"><td>
 				<h1 style="display:inline">aMule log</h1>
 				${' '}
-				<a href="#" onClick=${(e) => { e.preventDefault(); if (confirm('Do you really want to reset aMule log?')) loadLog(1); }}>(Reset log)</a><br />
+				<a href="#" onClick=${async (e) => { e.preventDefault(); if (await confirm('Do you really want to reset aMule log?', { danger: true, ok: 'Reset' })) loadLog(1); }}>(Reset log)</a><br />
 				<pre class="logpre">${log || ' '}</pre>
 			</td></tr>
 			<tr><td>
 				<h1 style="display:inline">Serverinfo</h1>
 				${' '}
-				<a href="#" onClick=${(e) => { e.preventDefault(); if (confirm('Do you really want to reset Serverinfo?')) loadSrv(1); }}>(Reset Serverinfo)</a>
+				<a href="#" onClick=${async (e) => { e.preventDefault(); if (await confirm('Do you really want to reset Serverinfo?', { danger: true, ok: 'Reset' })) loadSrv(1); }}>(Reset Serverinfo)</a>
 				<pre class="logpre small">${srv || ' '}</pre>
 			</td></tr>
 		</table>
@@ -898,12 +898,51 @@ const initialView = () => {
 	return VIEWS.indexOf(h) >= 0 ? h : 'download';
 };
 
+// Themed confirmation dialog + notices, replacing window.confirm/alert with
+// pieces that match this template's chrome (Luna blue #003161).
+function ConfirmDialog({ msg, danger, okLabel, onCancel, onOk }) {
+	useEffect(() => {
+		const onKey = (e) => { if (e.key === 'Escape') onCancel(); else if (e.key === 'Enter') onOk(); };
+		document.addEventListener('keydown', onKey);
+		return () => document.removeEventListener('keydown', onKey);
+	}, [onCancel, onOk]);
+	return html`
+	<div class="md-backdrop" onClick=${onCancel}>
+		<div class="md-dialog" role="dialog" aria-modal="true" onClick=${(e) => e.stopPropagation()}>
+			<div class="md-title">aMule</div>
+			<div class="md-body">${msg}</div>
+			<div class="md-actions">
+				<button class="md-btn" onClick=${onCancel}>Cancel</button>
+				<button class=${'md-btn ' + (danger ? 'danger' : 'primary')}
+					ref=${(el) => el && el.focus()} onClick=${onOk}>${okLabel || 'OK'}</button>
+			</div>
+		</div>
+	</div>`;
+}
+
+const Notices = ({ items }) => html`<div class="md-notices">
+	${items.map((n) => html`<div key=${n.id} class="md-notice">${n.msg}</div>`)}
+</div>`;
+
 function App() {
 	const [view, setView] = useState(initialView);
 	const [status, setStatus] = useState(null);
 	const [data, setData] = useState(null);
 	const [tick, setTick] = useState(0);
 	const busyRef = useRef(false);
+
+	// Themed replacements for window.confirm / window.alert.
+	const [confirmState, setConfirmState] = useState(null); // { msg, danger, ok, resolve }
+	const [notices, setNotices] = useState([]);
+	const confirm = useCallback((msg, opts) => new Promise((resolve) => {
+		setConfirmState({ msg, danger: !!(opts && opts.danger), ok: opts && opts.ok, resolve });
+	}), []);
+	const resolveConfirm = (result) => setConfirmState((c) => { if (c) c.resolve(result); return null; });
+	const notify = useCallback((msg) => {
+		const id = Math.random().toString(36).slice(2);
+		setNotices((n) => n.concat({ id, msg }));
+		setTimeout(() => setNotices((n) => n.filter((x) => x.id !== id)), 3200);
+	}, []);
 
 	const cycle = useCallback(async (force) => {
 		if (busyRef.current || (document.hidden && !force)) return;
@@ -934,11 +973,11 @@ function App() {
 		}
 	}, []);
 
-	// Original behaviour: guests get an alert when trying to run a command.
+	// Original behaviour: guests get a notice when trying to run a command.
 	const guard = useCallback(() => {
-		if (status && status.guest) { alert('You logged in as guest - commands are disabled'); return false; }
+		if (status && status.guest) { notify('You logged in as guest - commands are disabled'); return false; }
 		return true;
-	}, [status]);
+	}, [status, notify]);
 	const refresh = useCallback(() => cycle(true), [cycle]);
 	const go = (id) => {
 		if (id !== view) {
@@ -947,7 +986,7 @@ function App() {
 		}
 	};
 
-	const vp = { data, status, guard, refresh, tick };
+	const vp = { data, status, guard, refresh, tick, confirm };
 	let body;
 	if (view === 'download') body = html`<${DownloadView} ...${vp} />`;
 	else if (view === 'shared') body = html`<${SharedView} ...${vp} />`;
@@ -956,13 +995,16 @@ function App() {
 	else if (view === 'kad') body = html`<${KadView} ...${vp} />`;
 	else if (view === 'stats') body = html`<${StatsView} tick=${tick} />`;
 	else if (view === 'prefs') body = html`<${PrefsView} status=${status} guard=${guard} />`;
-	else if (view === 'log') body = html`<${LogView} />`;
+	else if (view === 'log') body = html`<${LogView} confirm=${confirm} />`;
 
 	return html`
 	<div class="page">
 		<${Hdr} go=${go} />
 		<main class="content">${body}</main>
 		<${Footer} status=${status} guard=${guard} />
+		${confirmState ? html`<${ConfirmDialog} msg=${confirmState.msg} danger=${confirmState.danger} okLabel=${confirmState.ok}
+			onCancel=${() => resolveConfirm(false)} onOk=${() => resolveConfirm(true)} />` : ''}
+		<${Notices} items=${notices} />
 	</div>`;
 }
 
