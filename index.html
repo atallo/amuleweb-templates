@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<!--
+  SPDX-License-Identifier: GPL-3.0-or-later
+  Copyright (C) 2026 atallo (https://github.com/atallo/amuleweb-templates)
+
+  Dev-only landing page (NOT distributed): lists every template and opens it
+  in the mock preview (dev/?template=<name>), so the whole gallery is
+  browsable offline with canned data — no aMule, no api.php, no copying.
+  Serve the repository ROOT with any static server and open http://host:port/
+      python3 -m http.server 8080   →   http://localhost:8080/
+-->
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="color-scheme" content="light dark" />
+	<title>aMule web templates — dev gallery</title>
+	<style>
+		:root {
+			--bg: #f5f6f8; --fg: #1b1f24; --muted: #5c6773; --card: #ffffff;
+			--border: #e1e5ea; --accent: #003161; --accent-fg: #fff;
+			--chip: #eef1f5; --chip-fg: #3a4652; --shadow: rgba(20,30,50,.08);
+			--badge-orig: #1a7f5a; --badge-mig: #7a5a1a;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--bg: #14171c; --fg: #e6e9ee; --muted: #9aa5b1; --card: #1d222a;
+				--border: #2b323c; --accent: #4b83c4; --accent-fg: #fff;
+				--chip: #262d37; --chip-fg: #c2ccd6; --shadow: rgba(0,0,0,.35);
+				--badge-orig: #4cc79a; --badge-mig: #d0a44e;
+			}
+		}
+		* { box-sizing: border-box; }
+		body {
+			margin: 0; background: var(--bg); color: var(--fg);
+			font: 15px/1.5 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+		}
+		header {
+			padding: 28px 24px 16px; max-width: 1100px; margin: 0 auto;
+		}
+		h1 { margin: 0 0 4px; font-size: 24px; }
+		.sub { color: var(--muted); font-size: 14px; }
+		.sub code {
+			background: var(--chip); color: var(--chip-fg);
+			padding: 1px 6px; border-radius: 5px; font-size: 12px;
+		}
+		.toolbar {
+			max-width: 1100px; margin: 8px auto 0; padding: 0 24px;
+			display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+		}
+		.toolbar label { color: var(--muted); font-size: 13px; }
+		select {
+			font: inherit; padding: 5px 8px; border-radius: 7px;
+			border: 1px solid var(--border); background: var(--card); color: var(--fg);
+		}
+		.count { color: var(--muted); font-size: 13px; margin-left: auto; }
+		main {
+			max-width: 1100px; margin: 0 auto; padding: 18px 24px 48px;
+			display: grid; gap: 16px;
+			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		}
+		.card {
+			display: flex; flex-direction: column; text-decoration: none;
+			background: var(--card); color: inherit; border: 1px solid var(--border);
+			border-radius: 12px; padding: 16px 16px 14px; box-shadow: 0 1px 3px var(--shadow);
+			transition: transform .08s ease, box-shadow .12s ease, border-color .12s ease;
+		}
+		.card:hover {
+			transform: translateY(-2px); box-shadow: 0 6px 18px var(--shadow);
+			border-color: var(--accent);
+		}
+		.card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+		.card .top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+		.card h2 { margin: 0; font-size: 17px; font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; }
+		.badge {
+			font-size: 11px; font-weight: 600; letter-spacing: .02em;
+			padding: 2px 7px; border-radius: 999px; border: 1px solid currentColor;
+		}
+		.badge.orig { color: var(--badge-orig); }
+		.badge.mig  { color: var(--badge-mig); }
+		.origin { color: var(--muted); font-size: 12px; margin: 0 0 8px; }
+		.desc { margin: 0; flex: 1; font-size: 13.5px; }
+		.go {
+			margin-top: 12px; align-self: flex-start; font-size: 13px; font-weight: 600;
+			color: var(--accent);
+		}
+		footer {
+			max-width: 1100px; margin: 0 auto; padding: 0 24px 40px;
+			color: var(--muted); font-size: 12.5px;
+		}
+		.note {
+			background: var(--card); border: 1px solid var(--border);
+			border-radius: 10px; padding: 12px 14px;
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<h1>aMule web templates <span style="color:var(--muted);font-weight:400;font-size:18px">— dev gallery</span></h1>
+		<div class="sub">
+			Offline preview with mock data (<code>dev/mock.js</code>) — no aMule, no <code>api.php</code>.
+			Pick a template to open it in the mock harness.
+		</div>
+	</header>
+
+	<div class="toolbar">
+		<label for="view">Open in view:</label>
+		<select id="view">
+			<option value="download">Transfers (downloads)</option>
+			<option value="shared">Shared files</option>
+			<option value="search">Search</option>
+			<option value="servers">Servers</option>
+			<option value="kad">Kad</option>
+			<option value="stats">Statistics</option>
+			<option value="prefs">Preferences</option>
+			<option value="log">Log</option>
+		</select>
+		<span class="count" id="count"></span>
+	</div>
+
+	<main id="grid"></main>
+
+	<footer>
+		<div class="note">
+			This page and everything under <code>dev/</code> are development-only and are
+			not part of the distributable templates. Server-rendered images
+			(progress chunk bars, statistics graphs) fall back to placeholders in mock mode.
+		</div>
+	</footer>
+
+	<script>
+		// Curated list (names + origin + description transcribed from README.md).
+		// The grid also auto-discovers any template folder not listed here, so a
+		// newly added template still shows up (with a generic description).
+		const TEMPLATES = [
+			{ name: 'simple',        type: 'orig', origin: 'Original design',                     desc: 'Clean, minimalist UI; light + dark theme, responsive.' },
+			{ name: 'amule-default', type: 'mig',  origin: 'aMule stock "default" template',      desc: 'Faithful reproduction of the classic look; light mobile support.' },
+			{ name: 'dotorg',        type: 'orig', origin: 'Original design (amule.org identity)', desc: '2026 desktop+mobile panel: brand navbar with live chips, bottom tab bar on phones, light/dark toggle.' },
+			{ name: 'xpdesktop',     type: 'orig', origin: 'Original design (aMule desktop)',      desc: 'The aMule desktop app as it looked on Windows XP ("Luna"): blue title bar, Tahoma, toolbar, listviews.' },
+			{ name: 'reloaded',      type: 'mig',  origin: 'AmuleWebUI-Reloaded',                  desc: 'Dark Material Bootstrap UI, fully self-hosted (no CDNs); improved phone support.' },
+			{ name: 'mobilemule',    type: 'mig',  origin: 'elbowz/mobileMule',                    desc: 'Mobile-first UI; Onsen UI CSS components; search/settings included.' },
+			{ name: 'flattened',     type: 'mig',  origin: 'amuleweb-flattened-template',          desc: 'The classic look with flat, lighter graphics; icon-only header with tooltips.' },
+			{ name: 'bootstrap',     type: 'mig',  origin: 'amuleweb-bootstrap-template',          desc: 'Bootstrap 4 UI: dark fixed navbar, SVG icons, responsive lists; jQuery dropped.' },
+			{ name: 'emodernui',     type: 'mig',  origin: 'eMuleModernUI (eMule design)',         desc: 'Bootswatch "Flatly" Bootstrap 3 look: dark navbar, panels, popover menus.' },
+			{ name: 'm26',           type: 'mig',  origin: 'jjling2011/amule-m26',                 desc: 'Sidebar UI with light/dark themes and a filter mini-language.' },
+			{ name: 'amulefresh',    type: 'mig',  origin: 'dcapape/amulefresh',                   desc: 'Bootstrap 5.3 dark re-skin: brand navbar, green-accent cards, stats carousel.' },
+		];
+
+		const grid = document.getElementById('grid');
+		const viewSel = document.getElementById('view');
+		const countEl = document.getElementById('count');
+
+		function hrefFor(name) {
+			const v = viewSel.value;
+			return 'dev/?template=' + encodeURIComponent(name) + (v && v !== 'download' ? '#' + v : '');
+		}
+
+		function render(list) {
+			grid.innerHTML = '';
+			list.forEach((t) => {
+				const a = document.createElement('a');
+				a.className = 'card';
+				a.href = hrefFor(t.name);
+				a.dataset.name = t.name;
+				const badge = t.type === 'orig' ? 'orig' : 'mig';
+				const badgeTxt = t.type === 'orig' ? 'original' : 'migrated';
+				a.innerHTML =
+					'<div class="top"><h2>' + t.name + '</h2>' +
+					'<span class="badge ' + badge + '">' + badgeTxt + '</span></div>' +
+					'<p class="origin">' + t.origin + '</p>' +
+					'<p class="desc">' + t.desc + '</p>' +
+					'<span class="go">Open preview →</span>';
+				grid.appendChild(a);
+			});
+			countEl.textContent = list.length + ' templates';
+		}
+
+		// Keep card links in sync with the selected view.
+		viewSel.addEventListener('change', () => {
+			grid.querySelectorAll('a.card').forEach((a) => { a.href = hrefFor(a.dataset.name); });
+		});
+
+		// Auto-discover: parse the directory listing of /templates/ (works with
+		// python's http.server and most static servers). Append any folder not
+		// already curated; never remove curated ones. Fails silently.
+		async function discover() {
+			try {
+				const res = await fetch('templates/');
+				if (!res.ok) return TEMPLATES;
+				const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+				const found = Array.from(doc.querySelectorAll('a'))
+					.map((a) => a.getAttribute('href') || '')
+					.map((h) => decodeURIComponent(h.replace(/\/+$/, '').split('/').pop()))
+					.filter((n) => n && n !== '..' && !n.startsWith('.'));
+				const known = new Set(TEMPLATES.map((t) => t.name));
+				const extra = [...new Set(found)].filter((n) => !known.has(n))
+					.map((n) => ({ name: n, type: 'mig', origin: 'Template', desc: '(no description)' }));
+				return TEMPLATES.concat(extra);
+			} catch (e) {
+				return TEMPLATES;
+			}
+		}
+
+		render(TEMPLATES);
+		discover().then(render);
+	</script>
+</body>
+</html>
