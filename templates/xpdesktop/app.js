@@ -105,17 +105,18 @@ const TOOLBAR = [
 	['about', 'About'],
 ];
 
-function TitleBar() {
+function TitleBar({ onBarDown, onBarDblClick, onMin, onMax, onClose, maximized }) {
 	return html`
-	<div class="xp-title">
+	<div class="xp-title" onPointerDown=${onBarDown} onDblClick=${onBarDblClick}>
 		<div class="xp-title-left">
 			<img class="xp-title-icon" src=${A + 'logo.png'} alt="" />
 			<span class="xp-title-text">aMule</span>
 		</div>
 		<div class="xp-caption">
-			<button class="xp-cap min" title="Minimize"><span></span></button>
-			<button class="xp-cap max" title="Maximize"><span></span></button>
-			<button class="xp-cap close" title="Close">✕</button>
+			<button class="xp-cap min" title="Minimize (roll up)" onClick=${onMin}><span></span></button>
+			<button class=${'xp-cap max' + (maximized ? ' is-restore' : '')}
+				title=${maximized ? 'Restore' : 'Maximize'} onClick=${onMax}><span></span></button>
+			<button class="xp-cap close" title="Close (log out)" onClick=${onClose}>✕</button>
 		</div>
 	</div>`;
 }
@@ -642,6 +643,8 @@ function AboutDialog({ status, onClose }) {
 const VIEW_ROUTE = { downloads: 'transfers', shared: 'shared', networks: 'servers', searches: 'search' };
 const REFRESH_MS = 4000;
 const VIEWS = ['downloads', 'networks', 'searches', 'shared', 'messages', 'statistics'];
+const MIN_W = 420, MIN_H = 320; // smallest the window may be resized to
+const RESIZE_DIRS = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
 
 function App() {
 	const [view, setView] = useState(() => { const h = location.hash.replace('#', ''); return VIEWS.indexOf(h) >= 0 ? h : 'downloads'; });
@@ -651,6 +654,57 @@ function App() {
 	const [modal, setModal] = useState(null);
 	const [now, setNow] = useState('');
 	const busy = useRef(false);
+
+	// XP window chrome: drag by the title bar, resize from the edges/corners,
+	// maximize/restore, roll-up ("minimize" -- there is no taskbar, so it just
+	// shades to the title bar), and close = log out. Once the window is moved
+	// or resized it "floats": an explicit fixed left/top/width/height that both
+	// gestures then just update (until maximized).
+	const [maximized, setMaximized] = useState(false);
+	const [shaded, setShaded] = useState(false);
+	const [flt, setFlt] = useState(null); // { left, top, w, h } | null (centered default)
+	const winRef = useRef(null);
+
+	// Detach from the centered default into an explicit floating rect.
+	const ensureFloat = () => {
+		if (flt) return flt;
+		const r = winRef.current.getBoundingClientRect();
+		const f = { left: Math.round(r.left), top: Math.round(r.top), w: Math.round(r.width), h: Math.round(r.height) };
+		setFlt(f);
+		return f;
+	};
+	const dragMove = (base, apply) => {
+		const move = (ev) => apply(ev);
+		const up = () => { document.removeEventListener('pointermove', move); document.removeEventListener('pointerup', up); };
+		document.addEventListener('pointermove', move);
+		document.addEventListener('pointerup', up);
+	};
+
+	const onBarDown = (e) => {
+		if (maximized || (e.target.closest && e.target.closest('.xp-cap'))) return;
+		e.preventDefault();
+		const base = ensureFloat();
+		const sx = e.clientX, sy = e.clientY;
+		dragMove(base, (ev) => setFlt({ ...base, left: base.left + (ev.clientX - sx), top: base.top + (ev.clientY - sy) }));
+	};
+	const onResizeDown = (dir) => (e) => {
+		if (maximized) return;
+		e.preventDefault(); e.stopPropagation();
+		const base = ensureFloat();
+		const sx = e.clientX, sy = e.clientY;
+		dragMove(base, (ev) => {
+			const dx = ev.clientX - sx, dy = ev.clientY - sy;
+			let { left, top, w, h } = base;
+			if (dir.indexOf('e') >= 0) w = Math.max(MIN_W, base.w + dx);
+			if (dir.indexOf('s') >= 0) h = Math.max(MIN_H, base.h + dy);
+			if (dir.indexOf('w') >= 0) { w = Math.max(MIN_W, base.w - dx); left = base.left + base.w - w; }
+			if (dir.indexOf('n') >= 0) { h = Math.max(MIN_H, base.h - dy); top = base.top + base.h - h; }
+			setFlt({ left, top, w, h });
+		});
+	};
+	const toggleMax = () => { setShaded(false); setMaximized((m) => !m); };
+	const onMin = () => { setMaximized(false); setShaded((s) => !s); };
+	const onClose = () => { window.location.href = 'login.php'; };
 
 	const cycle = useCallback(async (force) => {
 		if (busy.current || (document.hidden && !force)) return;
@@ -691,14 +745,25 @@ function App() {
 	else if (view === 'messages') body = html`<${MessagesView} />`;
 	else if (view === 'statistics') body = html`<${StatisticsView} tick=${tick} />`;
 
+	const floating = !maximized && !!flt;
+	const winCls = 'xp-window' + (maximized ? ' maximized' : '') + (shaded ? ' shaded' : '') + (floating ? ' floating' : '');
+	let winStyle = '';
+	if (floating) {
+		winStyle = `position:fixed; left:${flt.left}px; top:${flt.top}px; width:${flt.w}px; max-width:none;`
+			+ (shaded ? '' : ` height:${flt.h}px;`);
+	}
+
 	return html`
 	<div class="xp-desktop">
-		<div class="xp-window">
-			<${TitleBar} />
+		<div class=${winCls} style=${winStyle} ref=${winRef}>
+			<${TitleBar} onBarDown=${onBarDown} onBarDblClick=${toggleMax}
+				onMin=${onMin} onMax=${toggleMax} onClose=${onClose} maximized=${maximized} />
 			<${Toolbar} view=${view} onPick=${pick} />
 			<div class="xp-content">${body}</div>
 			<${Footer} status=${status} guard=${guard} />
 			<${StatusBar} status=${status} now=${now} />
+			${!maximized && !shaded ? RESIZE_DIRS.map((d) => html`<div key=${d}
+				class=${'xp-resize ' + d} onPointerDown=${onResizeDown(d)}></div>`) : ''}
 		</div>
 		${modal === 'prefs' ? html`<${PrefsDialog} status=${status} guard=${guard} onClose=${() => setModal(null)} />` : ''}
 		${modal === 'about' ? html`<${AboutDialog} status=${status} onClose=${() => setModal(null)} />` : ''}
