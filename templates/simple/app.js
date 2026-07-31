@@ -184,6 +184,7 @@ function Transfers({ data, guest, act, status }) {
 	const sort = useSort('name', 1);
 	const [fStatus, setFStatus] = useState('All');
 	const [fCat, setFCat] = useState('All');
+	const [qName, setQName] = useState('');
 	const [link, setLink] = useState('');
 	const [linkCat, setLinkCat] = useState(0);
 
@@ -191,9 +192,11 @@ function Transfers({ data, guest, act, status }) {
 	const downloads = (data && data.downloads) || [];
 	const uploads = (data && data.uploads) || [];
 
+	const nameQ = qName.trim().toLowerCase();
 	const filtered = downloads.filter((f) => {
 		if (fStatus !== 'All' && dlStatus(f) !== fStatus) return false;
 		if (fCat !== 'All') { const idx = cats.indexOf(fCat); if (idx >= 0 && f.category !== idx) return false; }
+		if (nameQ && (f.name || '').toLowerCase().indexOf(nameQ) < 0) return false;
 		return true;
 	});
 	const rows = sort.sort(filtered, {
@@ -235,6 +238,8 @@ function Transfers({ data, guest, act, status }) {
 						<select value=${fCat} onChange=${(e) => setFCat(e.target.value)}>
 							<option value="All">All</option>${cats.map((c) => html`<option value=${c}>${c}</option>`)}
 						</select>
+						<input type="search" class="dlfilter" placeholder="Filter by name" title="Filter downloads by name (local)"
+							value=${qName} onInput=${(e) => setQName(e.target.value)} />
 					</div>
 					<div class="grow"></div>
 					<div class="group addlink">

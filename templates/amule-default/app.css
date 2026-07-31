@@ -107,6 +107,8 @@ a.nav-stats:hover    { background-image: url(stats_1.png); }
 a.tbtn { display: inline-block; vertical-align: middle; }
 a.tbtn img { border: 0; display: block; }
 .toolrow td { vertical-align: middle; }
+.namefilter { vertical-align: middle; font-size: 12px; padding: 1px 4px; }
+a.tbtn.clr { text-decoration: none; color: #666; padding: 0 4px; font-size: 13px; }
 
 /* sortable header links keep th styling */
 th a:link, th a:visited, th a:active { color: #003161; }

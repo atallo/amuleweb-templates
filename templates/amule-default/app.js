@@ -249,14 +249,19 @@ function DownloadView({ data, status, guard, refresh }) {
 	const [fCat, setFCat] = useState('all');
 	const [aStatus, setAStatus] = useState('all');
 	const [aCat, setACat] = useState('all');
+	const [qName, setQName] = useState('');
 
 	const cats = (status && status.categories) || [];
 	const downloads = (data && data.downloads) || [];
 	const uploads = (data && data.uploads) || [];
 
+	// Local, live text filter over the download name (case-insensitive
+	// substring). Independent of the status/category "Apply" filter above.
+	const nameQ = qName.trim().toLowerCase();
 	const filtered = downloads.filter((f) => {
 		if (aStatus !== 'all' && statusString(f) !== aStatus) return false;
 		if (aCat !== 'all') { const i = cats.indexOf(aCat); if (i >= 0 && f.category !== i) return false; }
+		if (nameQ && (f.name || '').toLowerCase().indexOf(nameQ) < 0) return false;
 		return true;
 	});
 	const rows = sort.sort(filtered, {
@@ -310,6 +315,14 @@ function DownloadView({ data, status, guard, refresh }) {
 					</td>
 					<td><a class="tbtn" href="#" title="Apply"
 						onClick=${(e) => { e.preventDefault(); setAStatus(fStatus); setACat(fCat); }}><img src=${A + 'filter.png'} alt="Apply" /></a></td>
+						<td>
+							${' '}
+							<input class="namefilter" type="text" size="18" placeholder="Filter by name"
+								title="Filter downloads by name (local)"
+								value=${qName} onInput=${(e) => setQName(e.target.value)} />
+							${nameQ ? html`<a class="tbtn clr" href="#" title="Clear filter"
+								onClick=${(e) => { e.preventDefault(); setQName(''); }}>✕</a>` : ''}
+						</td>
 					<td>${(status && status.guest) ? html`<span class="guestmsg">${' '}You logged in as guest - commands are disabled</span>` : ''}</td>
 				</tr></table>
 			</td></tr>

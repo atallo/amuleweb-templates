@@ -127,6 +127,7 @@ a:hover { text-decoration: underline; }
 .toolbar .group { display: inline-flex; gap: 4px; align-items: center; }
 .toolbar .sep { width: 1px; align-self: stretch; background: var(--border); margin: 2px 4px; }
 .addlink input { width: 220px; max-width: 46vw; }
+.dlfilter { width: 150px; max-width: 40vw; }
 
 input[type=text], input[type=password], input[type=number], input[type=search], select, textarea {
 	appearance: none; border: 1px solid var(--border-2); background: var(--surface); color: var(--text);
