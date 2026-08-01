@@ -231,6 +231,36 @@ function Toasts() {
 }
 const notify = { message: (m) => pushToast(m, false), error: (m) => pushToast(m, true) };
 
+/* Confirm dialog (replaces window.confirm), same global pattern as notify. */
+let openConfirm = () => Promise.resolve(false);
+function ConfirmHost() {
+	const [st, setSt] = useState(null); // { msg, danger, ok, resolve }
+	const done = (r) => setSt((s) => { if (s) s.resolve(r); return null; });
+	useEffect(() => {
+		openConfirm = (msg, opts) => new Promise((resolve) => setSt({ msg, danger: !!(opts && opts.danger), ok: opts && opts.ok, resolve }));
+		return () => { openConfirm = () => Promise.resolve(false); };
+	}, []);
+	useEffect(() => {
+		if (!st) return undefined;
+		const onKey = (e) => { if (e.key === 'Escape') done(false); else if (e.key === 'Enter') done(true); };
+		document.addEventListener('keydown', onKey);
+		return () => document.removeEventListener('keydown', onKey);
+	}, [st]);
+	if (!st) return null;
+	return html`
+	<div class="mm-modal-back" onClick=${() => done(false)}>
+		<div class="mm-modal" onClick=${(e) => e.stopPropagation()}>
+			<p style="margin-top:0">${st.msg}</p>
+			<div style="display:flex; gap:8px; justify-content:flex-end">
+				<button class="button--outline button" onClick=${() => done(false)}>Cancel</button>
+				<button class=${'button' + (st.danger ? ' mm-btn-danger' : '')}
+					ref=${(el) => el && el.focus()} onClick=${() => done(true)}>${st.ok || 'OK'}</button>
+			</div>
+		</div>
+	</div>`;
+}
+const confirmDialog = (msg, opts) => openConfirm(msg, opts);
+
 /* ==================================================================== */
 /* Status page                                                          */
 /* ==================================================================== */
@@ -410,11 +440,11 @@ function DownloadsPage({ guard }) {
 	list = list.slice().sort((a, b) => { const x = acc(a), y = acc(b); return (x < y ? -1 : x > y ? 1 : 0) * (sortRev ? -1 : 1); });
 
 	const toggle = (h) => setSel((p) => { const n = new Set(p); n.has(h) ? n.delete(h) : n.add(h); return n; });
-	const run = (cmd, hashes, msg) => {
+	const run = async (cmd, hashes, msg) => {
 		if (!guard()) return;
 		if (!hashes.length) return;
 		if (cmd === 'cancel') {
-			if (!confirm('Delete selected files ?')) return;
+			if (!(await confirmDialog('Delete selected files?', { danger: true, ok: 'Delete' }))) return;
 			hashes.forEach((h) => known.remove(h));
 		}
 		apiPost('dload_cmd', { cmd, hashes: hashes.join(',') })
@@ -960,9 +990,9 @@ function LogPage() {
 	<div class="page-pad">
 		<button class="button--outline button" onClick=${() => { loadLog(); loadSrv(); }}>Refresh</button>
 		${' '}
-		<button class="button--outline button" onClick=${() => confirm('Reset aMule log?') && loadLog(1)}>Clear aMule log</button>
+		<button class="button--outline button" onClick=${async () => { if (await confirmDialog('Reset aMule log?', { danger: true, ok: 'Clear' })) loadLog(1); }}>Clear aMule log</button>
 		${' '}
-		<button class="button--outline button" onClick=${() => confirm('Reset server info?') && loadSrv(1)}>Clear server log</button>
+		<button class="button--outline button" onClick=${async () => { if (await confirmDialog('Reset server info?', { danger: true, ok: 'Clear' })) loadSrv(1); }}>Clear server log</button>
 		<div class="mm-divider" style="margin:10px -8px 4px">AMULE LOG</div>
 		<pre style="white-space:pre-wrap; word-break:break-word; font-size:12px; max-height:280px; overflow:auto">${log || ' '}</pre>
 		<div class="mm-divider" style="margin:10px -8px 4px">SERVER LOG</div>
@@ -1050,7 +1080,7 @@ function App() {
 	}, []);
 
 	const guard = useCallback(() => {
-		if (guest) { alert('You logged in as guest - commands are disabled'); return false; }
+		if (guest) { notify.error('You logged in as guest - commands are disabled'); return false; }
 		return true;
 	}, [guest]);
 
@@ -1108,6 +1138,7 @@ function App() {
 
 		${about ? html`<${AboutModal} close=${() => setAbout(false)} />` : ''}
 		<${Toasts} />
+		<${ConfirmHost} />
 	</div>`;
 }
 

@@ -216,3 +216,7 @@ table.kv th { text-align: right; }
 #btScrollUp { cursor: pointer; }
 .linklike { color: #1976d2; cursor: pointer; text-decoration: none; }
 html.dark .linklike { color: #64b5f6; }
+
+/* danger action inside the confirm dialog (reuses .mm-modal / .mm-modal-back) */
+.button.mm-btn-danger { background-color: #d0342c; }
+.button.mm-btn-danger:active { background-color: #b02a24; }
