@@ -260,6 +260,20 @@ fieldset legend { padding: 0 4px; color: #224; }
 .xp-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center; z-index: 100; }
 .xp-dialog { width: 560px; max-width: 94vw; background: #ece9d8; border: 3px solid #0831d9; border-radius: 8px 8px 6px 6px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); overflow: hidden; }
 .xp-dialog.about { width: 380px; }
+.xp-dialog.confirm { width: 340px; }
+.xp-dialog-msg { padding: 16px 14px; font-size: 11px; color: #000; background: #ece9d8; }
+
+/* notices (replace window.alert) -- small XP-beige balloons, bottom-right */
+.xp-notices {
+	position: fixed; right: 14px; bottom: 14px; z-index: 200;
+	display: flex; flex-direction: column; gap: 8px; max-width: 320px;
+	font-family: Tahoma, "Segoe UI", sans-serif;
+}
+.xp-notice {
+	background: #fdfbe6; color: #000; font-size: 11px;
+	border: 1px solid #b3ac95; border-left: 4px solid #0831d9;
+	padding: 8px 12px; border-radius: 3px; box-shadow: 0 4px 14px rgba(0, 0, 0, .35);
+}
 .prefs-body { display: flex; gap: 8px; padding: 8px; }
 .prefs-cats { width: 150px; flex: 0 0 auto; background: #fff; border: 1px solid #7f9db9; overflow: auto; max-height: 320px; }
 .prefcat { padding: 3px 8px; white-space: nowrap; cursor: pointer; }

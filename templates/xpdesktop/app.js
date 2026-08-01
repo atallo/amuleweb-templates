@@ -184,15 +184,15 @@ function ListView({ columns, children }) {
 /* DOWNLOADS                                                            */
 /* ==================================================================== */
 
-function DownloadsView({ data, status, guard, refresh }) {
+function DownloadsView({ data, status, guard, refresh, confirm }) {
 	const [sel, setSel] = useState(() => new Set());
 	const downloads = (data && data.downloads) || [];
 	const cats = (status && status.categories) || [];
 	const toggle = (h) => setSel((s) => { const n = new Set(s); n.has(h) ? n.delete(h) : n.add(h); return n; });
-	const cmd = (c) => {
+	const cmd = async (c) => {
 		if (!guard()) return;
 		const list = Array.from(sel);
-		if (c === 'cancel' && list.length && !confirm('Delete the selected file(s)?')) return;
+		if (c === 'cancel' && list.length && !(await confirm('Delete the selected file(s)?', { danger: true, ok: 'Delete' }))) return;
 		if (!list.length) return;
 		apiPost('dload_cmd', { cmd: c, hashes: list.join(',') }).then(refresh).catch(() => {});
 		if (c === 'cancel') setSel(new Set());
@@ -269,7 +269,7 @@ function NetworksView({ data, status, guard, refresh, tick }) {
 	</div>`;
 }
 
-function ServersView({ data, status, guard, refresh }) {
+function ServersView({ data, status, guard, refresh, confirm }) {
 	const [name, setName] = useState(''); const [ipport, setIpport] = useState('');
 	const servers = (data && data.servers) || [];
 	const curAddr = (status && status.ed2k && status.ed2k.state === 'connected' && status.ed2k.addr) || '';
@@ -306,7 +306,7 @@ function ServersView({ data, status, guard, refresh }) {
 		const connected = curAddr && s.addr === curAddr;
 		return html`
 			<div key=${s.ip + ':' + s.port} class=${'lv-row' + (connected ? ' bold' : '')}
-				onDblClick=${() => srv('connect', s)} onContextMenu=${(e) => { e.preventDefault(); if (confirm('Remove ' + (s.name || s.addr) + '?')) srv('remove', s); }}>
+				onDblClick=${() => srv('connect', s)} onContextMenu=${async (e) => { e.preventDefault(); if (await confirm('Remove ' + (s.name || s.addr) + '?', { danger: true, ok: 'Remove' })) srv('remove', s); }}>
 				<div class="lv-cell" style="width:150px;flex:1 1 auto">${s.name}</div>
 				<div class="lv-cell" style="width:130px">${s.addr}</div>
 				<div class="lv-cell" style="width:160px" title=${s.desc}>${s.desc}</div>
@@ -646,6 +646,32 @@ const VIEWS = ['downloads', 'networks', 'searches', 'shared', 'messages', 'stati
 const MIN_W = 420, MIN_H = 320; // smallest the window may be resized to
 const RESIZE_DIRS = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
 
+// Themed confirmation dialog + notices, replacing window.confirm/alert with
+// pieces that match the XP dialog chrome (reuses .xp-modal-backdrop/.xp-dialog).
+function ConfirmDialog({ msg, okLabel, onCancel, onOk }) {
+	useEffect(() => {
+		const onKey = (e) => { if (e.key === 'Escape') onCancel(); else if (e.key === 'Enter') onOk(); };
+		document.addEventListener('keydown', onKey);
+		return () => document.removeEventListener('keydown', onKey);
+	}, [onCancel, onOk]);
+	return html`
+	<div class="xp-modal-backdrop" onClick=${onCancel}>
+		<div class="xp-dialog confirm" onClick=${(e) => e.stopPropagation()}>
+			<div class="xp-title sm"><span class="xp-title-text">aMule</span>
+				<div class="xp-caption"><button class="xp-cap close" onClick=${onCancel}>✕</button></div></div>
+			<div class="xp-dialog-msg">${msg}</div>
+			<div class="prefs-foot">
+				<button class="xp-btn def" ref=${(el) => el && el.focus()} onClick=${onOk}>${okLabel || 'OK'}</button>
+				<button class="xp-btn" onClick=${onCancel}>Cancel</button>
+			</div>
+		</div>
+	</div>`;
+}
+
+const Notices = ({ items }) => html`<div class="xp-notices">
+	${items.map((n) => html`<div key=${n.id} class="xp-notice">${n.msg}</div>`)}
+</div>`;
+
 function App() {
 	const [view, setView] = useState(() => { const h = location.hash.replace('#', ''); return VIEWS.indexOf(h) >= 0 ? h : 'downloads'; });
 	const [status, setStatus] = useState(null);
@@ -654,6 +680,19 @@ function App() {
 	const [modal, setModal] = useState(null);
 	const [now, setNow] = useState('');
 	const busy = useRef(false);
+
+	// Themed replacements for window.confirm / window.alert.
+	const [confirmState, setConfirmState] = useState(null); // { msg, ok, resolve }
+	const [notices, setNotices] = useState([]);
+	const confirm = useCallback((msg, opts) => new Promise((resolve) => {
+		setConfirmState({ msg, ok: opts && opts.ok, resolve });
+	}), []);
+	const resolveConfirm = (result) => setConfirmState((c) => { if (c) c.resolve(result); return null; });
+	const notify = useCallback((msg) => {
+		const id = Math.random().toString(36).slice(2);
+		setNotices((n) => n.concat({ id, msg }));
+		setTimeout(() => setNotices((n) => n.filter((x) => x.id !== id)), 3800);
+	}, []);
 
 	// XP window chrome: drag by the title bar, resize from the edges/corners,
 	// maximize/restore, roll-up ("minimize" -- there is no taskbar, so it just
@@ -725,18 +764,18 @@ function App() {
 	}, []);
 	useEffect(() => { if (location.pathname.endsWith('login.php')) { try { history.replaceState(null, '', './'); } catch (e) { /* ignore */ } } }, []);
 
-	const guard = useCallback(() => { if (status && status.guest) { alert('You logged in as guest - commands are disabled'); return false; } return true; }, [status]);
+	const guard = useCallback(() => { if (status && status.guest) { notify('You logged in as guest - commands are disabled'); return false; } return true; }, [status, notify]);
 	const refresh = useCallback(() => cycle(true), [cycle]);
 
 	const pick = (id) => {
 		if (id === 'preferences') { setModal('prefs'); return; }
 		if (id === 'about') { setModal('about'); return; }
 		if (id === 'disconnect') { if (guard()) apiPost('server_disconnect', {}).then(refresh).catch(() => {}); return; }
-		if (id === 'import') { alert('Import: drop ed2k links in the box at the bottom, or paste a collection — handled by the core.'); return; }
+		if (id === 'import') { notify('Import: drop ed2k links in the box at the bottom, or paste a collection — handled by the core.'); return; }
 		if (id !== view) { setData(null); setView(id); try { history.replaceState(null, '', '#' + id); } catch (e) { /* ignore */ } }
 	};
 
-	const vp = { data, status, guard, refresh, tick };
+	const vp = { data, status, guard, refresh, tick, confirm };
 	let body;
 	if (view === 'downloads') body = html`<${DownloadsView} ...${vp} />`;
 	else if (view === 'networks') body = html`<${NetworksView} ...${vp} />`;
@@ -767,6 +806,9 @@ function App() {
 		</div>
 		${modal === 'prefs' ? html`<${PrefsDialog} status=${status} guard=${guard} onClose=${() => setModal(null)} />` : ''}
 		${modal === 'about' ? html`<${AboutDialog} status=${status} onClose=${() => setModal(null)} />` : ''}
+		${confirmState ? html`<${ConfirmDialog} msg=${confirmState.msg} okLabel=${confirmState.ok}
+			onCancel=${() => resolveConfirm(false)} onOk=${() => resolveConfirm(true)} />` : ''}
+		<${Notices} items=${notices} />
 	</div>`;
 }
 
