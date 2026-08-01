@@ -261,7 +261,7 @@ const GuestBadge = ({ status }) => ((status && status.guest)
 /* TRANSFER (downloads + uploads)                                       */
 /* ==================================================================== */
 
-function TransferView({ data, status, guard, refresh }) {
+function TransferView({ data, status, guard, refresh, confirm }) {
 	const sel = useSel();
 	const sort = useSort('', 1);
 	const [fStatus, setFStatus] = useState('all');
@@ -291,9 +291,9 @@ function TransferView({ data, status, guard, refresh }) {
 		up: a.up + Number(f.xfer_up), dn: a.dn + Number(f.xfer_down), speed: a.speed + Number(f.xfer_speed),
 	}), { up: 0, dn: 0, speed: 0 });
 
-	const cmd = (c) => {
+	const cmd = async (c) => {
 		if (!guard()) return;
-		if (c === 'cancel' && !confirm('Remove the selected files?')) return;
+		if (c === 'cancel' && !(await confirm('Remove the selected files?', { danger: true, ok: 'Remove' }))) return;
 		const list = sel.list();
 		if (!list.length) return;
 		apiPost('dload_cmd', { cmd: c, hashes: list.join(',') }).then(refresh).catch(() => {});
@@ -839,7 +839,7 @@ function PrefsView({ status, guard }) {
 /* LOG                                                                  */
 /* ==================================================================== */
 
-function LogView() {
+function LogView({ confirm }) {
 	const [log, setLog] = useState('');
 	const [srv, setSrv] = useState('');
 	const loadLog = useCallback((reset) => apiText('log', reset ? { reset: 1 } : {}).then(setLog).catch(() => {}), []);
@@ -847,10 +847,10 @@ function LogView() {
 	useEffect(() => { loadLog(); loadSrv(); }, [loadLog, loadSrv]);
 	return html`
 	<div>
-		<${Card} title=${html`aMule log <a href="#" class="reset-link" onClick=${(e) => { e.preventDefault(); if (confirm('Reset aMule log?')) loadLog(1); }}>(reset)</a>`}>
+		<${Card} title=${html`aMule log <a href="#" class="reset-link" onClick=${async (e) => { e.preventDefault(); if (await confirm('Reset aMule log?', { danger: true, ok: 'Reset' })) loadLog(1); }}>(reset)</a>`}>
 			<pre class="logpre">${log || ' '}</pre>
 		<//>
-		<${Card} title=${html`Serverinfo <a href="#" class="reset-link" onClick=${(e) => { e.preventDefault(); if (confirm('Reset Serverinfo?')) loadSrv(1); }}>(reset)</a>`}>
+		<${Card} title=${html`Serverinfo <a href="#" class="reset-link" onClick=${async (e) => { e.preventDefault(); if (await confirm('Reset Serverinfo?', { danger: true, ok: 'Reset' })) loadSrv(1); }}>(reset)</a>`}>
 			<pre class="logpre small">${srv || ' '}</pre>
 		<//>
 	</div>`;
@@ -869,6 +869,38 @@ const initialView = () => {
 	return VIEWS.indexOf(h) >= 0 ? h : 'download';
 };
 
+// Themed confirmation dialog (a Bootstrap 5 modal shown without the Bootstrap
+// JS; adapts to data-bs-theme) and notices, replacing window.confirm/alert.
+function ConfirmDialog({ msg, danger, okLabel, onCancel, onOk }) {
+	useEffect(() => {
+		const onKey = (e) => { if (e.key === 'Escape') onCancel(); else if (e.key === 'Enter') onOk(); };
+		document.addEventListener('keydown', onKey);
+		return () => document.removeEventListener('keydown', onKey);
+	}, [onCancel, onOk]);
+	return html`
+	<div class="modal-backdrop fade show"></div>
+	<div class="modal fade show d-block" tabindex="-1" onClick=${onCancel}>
+		<div class="modal-dialog modal-dialog-centered" onClick=${(e) => e.stopPropagation()}>
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">aMule</h5>
+					<button type="button" class="btn-close" aria-label="Close" onClick=${onCancel}></button>
+				</div>
+				<div class="modal-body">${msg}</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" onClick=${onCancel}>Cancel</button>
+					<button type="button" class=${'btn ' + (danger ? 'btn-danger' : 'btn-primary')}
+						ref=${(el) => el && el.focus()} onClick=${onOk}>${okLabel || 'OK'}</button>
+				</div>
+			</div>
+		</div>
+	</div>`;
+}
+
+const Notices = ({ items }) => html`<div class="md-notices">
+	${items.map((n) => html`<div key=${n.id} class="alert alert-secondary shadow">${n.msg}</div>`)}
+</div>`;
+
 function App() {
 	const [view, setView] = useState(initialView);
 	const [status, setStatus] = useState(null);
@@ -876,6 +908,19 @@ function App() {
 	const [tick, setTick] = useState(0);
 	const [theme, setThemeState] = useState(initialTheme);
 	const busyRef = useRef(false);
+
+	// Themed replacements for window.confirm / window.alert.
+	const [confirmState, setConfirmState] = useState(null); // { msg, danger, ok, resolve }
+	const [notices, setNotices] = useState([]);
+	const confirm = useCallback((msg, opts) => new Promise((resolve) => {
+		setConfirmState({ msg, danger: !!(opts && opts.danger), ok: opts && opts.ok, resolve });
+	}), []);
+	const resolveConfirm = (result) => setConfirmState((c) => { if (c) c.resolve(result); return null; });
+	const notify = useCallback((msg) => {
+		const id = Math.random().toString(36).slice(2);
+		setNotices((n) => n.concat({ id, msg }));
+		setTimeout(() => setNotices((n) => n.filter((x) => x.id !== id)), 3200);
+	}, []);
 
 	useEffect(() => { applyTheme(theme); }, [theme]);
 
@@ -909,9 +954,9 @@ function App() {
 	}, []);
 
 	const guard = useCallback(() => {
-		if (status && status.guest) { alert('You logged in as guest - commands are disabled'); return false; }
+		if (status && status.guest) { notify('You logged in as guest - commands are disabled'); return false; }
 		return true;
-	}, [status]);
+	}, [status, notify]);
 	const refresh = useCallback(() => cycle(true), [cycle]);
 	const go = (id) => {
 		if (id !== view) {
@@ -921,7 +966,7 @@ function App() {
 	};
 	const toggleTheme = () => setThemeState((t) => (t === 'dark' ? 'light' : 'dark'));
 
-	const vp = { data, status, guard, refresh, tick };
+	const vp = { data, status, guard, refresh, tick, confirm };
 	let body;
 	if (view === 'download') body = html`<${TransferView} ...${vp} />`;
 	else if (view === 'shared') body = html`<${SharedView} ...${vp} />`;
@@ -930,13 +975,16 @@ function App() {
 	else if (view === 'kad') body = html`<${KadView} ...${vp} />`;
 	else if (view === 'stats') body = html`<${StatsView} tick=${tick} />`;
 	else if (view === 'prefs') body = html`<${PrefsView} status=${status} guard=${guard} />`;
-	else if (view === 'log') body = html`<${LogView} />`;
+	else if (view === 'log') body = html`<${LogView} confirm=${confirm} />`;
 
 	return html`
 	<div>
 		<${Navbar} view=${view} go=${go} theme=${theme} toggleTheme=${toggleTheme} />
 		<main class="container-fluid amf-main">${body}</main>
 		<${Ed2kFooter} status=${status} guard=${guard} />
+		${confirmState ? html`<${ConfirmDialog} msg=${confirmState.msg} danger=${confirmState.danger} okLabel=${confirmState.ok}
+			onCancel=${() => resolveConfirm(false)} onOk=${() => resolveConfirm(true)} />` : ''}
+		<${Notices} items=${notices} />
 	</div>`;
 }
 
