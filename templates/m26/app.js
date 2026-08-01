@@ -267,7 +267,7 @@ function Sidebar({ view, go, status }) {
 const DL_SORT_KEYS = ['name_hr', 'cat_hr', 'size', 'complete', 'speed', 'prio', 'status'];
 const DL_STR_KEYS = ['name_hr', 'cat_hr', 'prio', 'status'];
 
-function DownloadView({ data, status, guard, refresh }) {
+function DownloadView({ data, status, guard, refresh, confirm, notify }) {
 	const [sortTag, setSortTag] = useState('size');
 	const [desc, setDesc] = useState(true);
 	const [filter, setFilter] = useState('');
@@ -309,18 +309,18 @@ function DownloadView({ data, status, guard, refresh }) {
 	const doCmd = async (cmd) => {
 		if (!guard()) return;
 		const files = selected();
-		if (!files.length) { alert('Please select tasks.'); return; }
-		if (cmd === 'cancel' && !confirm('Remove ' + files.length + ' tasks?')) return;
+		if (!files.length) { notify('Please select tasks.'); return; }
+		if (cmd === 'cancel' && !(await confirm('Remove ' + files.length + ' tasks?', { danger: true, ok: 'Remove' }))) return;
 		apiPost('dload_cmd', { cmd, hashes: files.map((f) => f.hash).join(',') }).then(refresh).catch(() => {});
 		if (cmd === 'cancel') setSel(new Set());
 	};
 	const copyLinks = async () => {
 		const files = selected();
-		if (!files.length) { alert('Please select tasks.'); return; }
+		if (!files.length) { notify('Please select tasks.'); return; }
 		const links = files.map((f) => f.link).filter((l) => l);
-		if (!links.length) { alert('No ed2k links available.'); return; }
+		if (!links.length) { notify('No ed2k links available.'); return; }
 		const ok = await copyToClipboard(links.join('\n'));
-		alert(ok ? 'Copied to clipboard.' : 'Fail to copy to clipboard.');
+		notify(ok ? 'Copied to clipboard.' : 'Failed to copy to clipboard.');
 	};
 	const onAction = (a) => {
 		if (a === 'copy_link') copyLinks();
@@ -387,7 +387,7 @@ function DownloadView({ data, status, guard, refresh }) {
 /* SEARCH                                                               */
 /* ==================================================================== */
 
-function SearchView({ data, status, guard, refresh }) {
+function SearchView({ data, status, guard, refresh, notify }) {
 	const [sortTag, setSortTag] = useState('none');
 	const [desc, setDesc] = useState(true);
 	const [filter, setFilter] = useState('');
@@ -435,7 +435,7 @@ function SearchView({ data, status, guard, refresh }) {
 	const download = () => {
 		if (!guard()) return;
 		const files = rows.filter((r) => r.checked);
-		if (!files.length) { alert('Please select files to download.'); return; }
+		if (!files.length) { notify('Please select files to download.'); return; }
 		apiPost('search_download', { hashes: files.map((f) => f.hash).join(','), cat })
 			.then(refresh).catch(() => {});
 		setSel(new Set());
@@ -498,7 +498,7 @@ function SearchView({ data, status, guard, refresh }) {
 /* SERVER                                                               */
 /* ==================================================================== */
 
-function ServerView({ data, status, guard, refresh }) {
+function ServerView({ data, status, guard, refresh, confirm, notify }) {
 	const [sortTag, setSortTag] = useState('name');
 	const [desc, setDesc] = useState(true);
 	const [bootstrapParam, setBootstrapParam] = useState('');
@@ -511,9 +511,9 @@ function ServerView({ data, status, guard, refresh }) {
 	const byCol = (k) => { if (sortTag === k) setDesc((d) => !d); else { setSortTag(k); setDesc(true); } };
 	const isConnected = (s) => curAddr && s.addr === curAddr;
 
-	const srvCmd = (cmd, s) => {
+	const srvCmd = async (cmd, s) => {
 		if (!guard()) return;
-		if (cmd === 'remove' && !confirm('Remove server?')) return;
+		if (cmd === 'remove' && !(await confirm('Remove server?', { danger: true, ok: 'Remove' }))) return;
 		apiPost('server_cmd', { cmd, ip: s.ip, port: s.port }).then(refresh).catch(() => {});
 	};
 	const kadAct = (action, extra) => {
@@ -534,14 +534,14 @@ function ServerView({ data, status, guard, refresh }) {
 		} else if (p.indexOf('http') === 0) {
 			kadAct('update_url', { url: p });
 		} else {
-			alert('Invalid bootstrap param: ' + p);
+			notify('Invalid bootstrap param: ' + p);
 		}
 	};
 	const addServer = () => {
 		// "IPv4:port serv_name"
 		const p = newServer.trim();
 		const m = p.match(/^(\S+):(\d{1,5})\s+(.+)$/);
-		if (!m) { alert('Require 3 params.'); return; }
+		if (!m) { notify('Require 3 params: IPv4:port name.'); return; }
 		if (!guard()) return;
 		apiPost('server_add', { addr: m[1], port: m[2], name: m[3] }).then(refresh).catch(() => {});
 		setNewServer('');
@@ -605,7 +605,7 @@ function ServerView({ data, status, guard, refresh }) {
 /* ED2K links                                                           */
 /* ==================================================================== */
 
-function Ed2kView({ status, guard }) {
+function Ed2kView({ status, guard, notify }) {
 	const [text, setText] = useState('');
 	const [cat, setCat] = useState(0);
 	const cats = (status && status.categories) || [];
@@ -613,9 +613,9 @@ function Ed2kView({ status, guard }) {
 	const download = () => {
 		if (!guard()) return;
 		const ls = links();
-		if (!ls.length) { alert('There is no link to download!'); return; }
+		if (!ls.length) { notify('There is no link to download!'); return; }
 		ls.forEach((l) => apiPost('ed2k', { link: l, cat }).catch(() => {}));
-		alert('Server receive ' + ls.length + ' links.');
+		notify('Server received ' + ls.length + ' link(s).');
 		setText('');
 	};
 	return html`
@@ -653,7 +653,7 @@ function statsTreeToText(node, depth) {
 	return out;
 }
 
-function LogsView({ guard }) {
+function LogsView({ guard, confirm }) {
 	const [cat, setCat] = useState('amule');
 	const [logs, setLogs] = useState({ amule: '', server: '', stats: '' });
 	const [autoScroll, setAutoScroll] = useState(true);
@@ -671,9 +671,9 @@ function LogsView({ guard }) {
 		}
 	}, [logs, cat, autoScroll]);
 
-	const clearAll = () => {
+	const clearAll = async () => {
 		if (!guard()) return;
-		if (!confirm('Clear logs?')) return;
+		if (!(await confirm('Clear logs?', { danger: true, ok: 'Clear' }))) return;
 		apiText('log', { reset: 1 }).then((t) => setLogs((l) => Object.assign({}, l, { amule: t }))).catch(() => {});
 		apiText('serverinfo', { reset: 1 }).then((t) => setLogs((l) => Object.assign({}, l, { server: t }))).catch(() => {});
 	};
@@ -755,7 +755,7 @@ const PREF_DESC = {
 	autorefresh_time: 'Page refresh interval',
 };
 
-function PrefsView({ status, guard, theme, setTheme }) {
+function PrefsView({ status, guard, theme, setTheme, notify }) {
 	const [form, setForm] = useState(null);
 	const guest = !!(status && status.guest);
 	const load = useCallback(() => apiGet('options').then((o) => {
@@ -770,7 +770,7 @@ function PrefsView({ status, guard, theme, setTheme }) {
 		if (!guard()) return;
 		const payload = {};
 		Object.keys(form).forEach((k) => { payload[k] = form[k] === undefined ? '' : String(form[k]); });
-		apiPost('set_options', payload).then(() => { alert('Ok!'); load(); }).catch(() => {});
+		apiPost('set_options', payload).then(() => { notify('Options saved.'); load(); }).catch(() => {});
 	};
 
 	const known = {};
@@ -886,12 +886,51 @@ const initialView = () => {
 	return VIEWS.indexOf(h) >= 0 ? h : 'download';
 };
 
+// Themed confirmation dialog + notices, replacing window.confirm/alert with
+// pieces that use m26's own theme variables (light/dark aware).
+function ConfirmDialog({ msg, danger, okLabel, onCancel, onOk }) {
+	useEffect(() => {
+		const onKey = (e) => { if (e.key === 'Escape') onCancel(); else if (e.key === 'Enter') onOk(); };
+		document.addEventListener('keydown', onKey);
+		return () => document.removeEventListener('keydown', onKey);
+	}, [onCancel, onOk]);
+	return html`
+	<div class="m26-mask" onClick=${onCancel}>
+		<div class="m26-dialog" role="dialog" aria-modal="true" onClick=${(e) => e.stopPropagation()}>
+			<div class="m26-dialog-title">aMule</div>
+			<div class="m26-dialog-body">${msg}</div>
+			<div class="m26-dialog-actions">
+				<button class="m26-dlg-btn" onClick=${onCancel}>Cancel</button>
+				<button class=${'m26-dlg-btn' + (danger ? ' danger' : ' primary')}
+					ref=${(el) => el && el.focus()} onClick=${onOk}>${okLabel || 'OK'}</button>
+			</div>
+		</div>
+	</div>`;
+}
+
+const Notices = ({ items }) => html`<div class="m26-notices">
+	${items.map((n) => html`<div key=${n.id} class="m26-notice">${n.msg}</div>`)}
+</div>`;
+
 function App() {
 	const [view, setView] = useState(initialView);
 	const [status, setStatus] = useState(null);
 	const [data, setData] = useState(null);
 	const [theme, setThemeState] = useState(initialTheme);
 	const busyRef = useRef(false);
+
+	// Themed replacements for window.confirm / window.alert.
+	const [confirmState, setConfirmState] = useState(null); // { msg, danger, ok, resolve }
+	const [notices, setNotices] = useState([]);
+	const confirm = useCallback((msg, opts) => new Promise((resolve) => {
+		setConfirmState({ msg, danger: !!(opts && opts.danger), ok: opts && opts.ok, resolve });
+	}), []);
+	const resolveConfirm = (result) => setConfirmState((c) => { if (c) c.resolve(result); return null; });
+	const notify = useCallback((msg) => {
+		const id = Math.random().toString(36).slice(2);
+		setNotices((n) => n.concat({ id, msg }));
+		setTimeout(() => setNotices((n) => n.filter((x) => x.id !== id)), 3200);
+	}, []);
 
 	useEffect(() => { applyTheme(theme); }, [theme]);
 
@@ -935,9 +974,9 @@ function App() {
 	}, []);
 
 	const guard = useCallback(() => {
-		if (status && status.guest) { alert('You logged in as guest - commands are disabled'); return false; }
+		if (status && status.guest) { notify('You logged in as guest - commands are disabled'); return false; }
 		return true;
-	}, [status]);
+	}, [status, notify]);
 	const refresh = useCallback(() => cycle(true), [cycle]);
 	const go = (id) => {
 		if (id !== view) {
@@ -950,20 +989,23 @@ function App() {
 	};
 	const setTheme = (t) => setThemeState(t);
 
-	const vp = { data, status, guard, refresh };
+	const vp = { data, status, guard, refresh, confirm, notify };
 	let body;
 	if (view === 'download') body = html`<${DownloadView} ...${vp} />`;
 	else if (view === 'search') body = html`<${SearchView} ...${vp} />`;
 	else if (view === 'server') body = html`<${ServerView} ...${vp} />`;
-	else if (view === 'ed2k') body = html`<${Ed2kView} status=${status} guard=${guard} />`;
-	else if (view === 'logs') body = html`<${LogsView} guard=${guard} />`;
-	else if (view === 'prefs') body = html`<${PrefsView} status=${status} guard=${guard} theme=${theme} setTheme=${setTheme} />`;
+	else if (view === 'ed2k') body = html`<${Ed2kView} status=${status} guard=${guard} notify=${notify} />`;
+	else if (view === 'logs') body = html`<${LogsView} guard=${guard} confirm=${confirm} />`;
+	else if (view === 'prefs') body = html`<${PrefsView} status=${status} guard=${guard} theme=${theme} setTheme=${setTheme} notify=${notify} />`;
 	else if (view === 'about') body = html`<${AboutView} />`;
 
 	return html`
 	<div class="app-container">
 		<${Sidebar} view=${view} go=${go} status=${status} />
 		<div class="main-container mw1080-left">${body}</div>
+		${confirmState ? html`<${ConfirmDialog} msg=${confirmState.msg} danger=${confirmState.danger} okLabel=${confirmState.ok}
+			onCancel=${() => resolveConfirm(false)} onOk=${() => resolveConfirm(true)} />` : ''}
+		<${Notices} items=${notices} />
 	</div>`;
 }
 
