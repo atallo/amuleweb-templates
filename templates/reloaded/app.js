@@ -308,7 +308,7 @@ const TBtn = ({ icon, label, title, onClick, cls }) => html`
 /* DOWNLOAD / UPLOAD                                                    */
 /* ==================================================================== */
 
-function DownloadView({ data, status, guard, refresh }) {
+function DownloadView({ data, status, guard, refresh, confirm }) {
 	const sel = useSel();
 	const sort = useSort();
 	const [fStatus, setFStatus] = useState('all');
@@ -338,12 +338,12 @@ function DownloadView({ data, status, guard, refresh }) {
 	const tot = downloads.reduce((a, f) => ({ size: a.size + Number(f.size), done: a.done + Number(f.size_done), speed: a.speed + Number(f.speed) }), { size: 0, done: 0, speed: 0 });
 	const utot = uploads.reduce((a, f) => ({ up: a.up + Number(f.xfer_up), dn: a.dn + Number(f.xfer_down), speed: a.speed + Number(f.xfer_speed) }), { up: 0, dn: 0, speed: 0 });
 
-	const cmd = (c) => {
+	const cmd = async (c) => {
 		if (!guard()) return;
 		const list = sel.list();
 		if (c === 'cancel') {
 			if (list.length === 0) return;
-			if (!confirm('Delete selected ' + list.length + ' files ?')) return;
+			if (!(await confirm('Delete selected ' + list.length + ' files?', { danger: true, ok: 'Delete' }))) return;
 		}
 		if (!list.length) return;
 		apiPost('dload_cmd', { cmd: c, hashes: list.join(',') }).then(refresh).catch(() => {});
@@ -964,7 +964,7 @@ function PrefsView({ status, guard }) {
 /* LOG                                                                  */
 /* ==================================================================== */
 
-function LogView() {
+function LogView({ confirm }) {
 	const [log, setLog] = useState('');
 	const [srv, setSrv] = useState('');
 	const loadLog = useCallback((reset) => apiText('log', reset ? { reset: 1 } : {}).then(setLog).catch(() => {}), []);
@@ -982,11 +982,11 @@ function LogView() {
 					</div>
 					<div class="btn-group">
 						<a class="btn btn-group" style="background-color:#ef5350" href="#"
-							onClick=${(e) => { e.preventDefault(); if (confirm('Do you really want to RESET aMule log?')) loadLog(1); }}>
+							onClick=${async (e) => { e.preventDefault(); if (await confirm('Do you really want to RESET aMule log?', { danger: true, ok: 'Clear log' })) loadLog(1); }}>
 							<${Gi} n="floppy-remove" style="color:#ffffff" />${' '}<span style="color:#fff">Clear aMule Log</span>
 						</a>
 						<a class="btn btn-group" style="background-color:#ef5350" href="#"
-							onClick=${(e) => { e.preventDefault(); if (confirm('Do you really want to RESET Server log?')) loadSrv(1); }}>
+							onClick=${async (e) => { e.preventDefault(); if (await confirm('Do you really want to RESET Server log?', { danger: true, ok: 'Clear log' })) loadSrv(1); }}>
 							<${Gi} n="floppy-remove" style="color:#ffffff" />${' '}<span style="color:#fff">Clear Server Log</span>
 						</a>
 					</div>
@@ -1022,12 +1022,59 @@ const initialView = () => {
 	return VIEWS.indexOf(h) >= 0 ? h : 'download';
 };
 
+// Themed confirmation dialog (a Bootstrap 3 modal shown without the Bootstrap
+// JS) and notices, replacing window.confirm / window.alert.
+function ConfirmDialog({ msg, danger, okLabel, onCancel, onOk }) {
+	useEffect(() => {
+		const onKey = (e) => { if (e.key === 'Escape') onCancel(); else if (e.key === 'Enter') onOk(); };
+		document.addEventListener('keydown', onKey);
+		return () => document.removeEventListener('keydown', onKey);
+	}, [onCancel, onOk]);
+	return html`
+	<div>
+		<div class="modal fade in" style="display:block" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" onClick=${onCancel}>${'×'}</button>
+						<h4 class="modal-title">aMule</h4>
+					</div>
+					<div class="modal-body">${msg}</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" onClick=${onCancel}>Cancel</button>
+						<button type="button" class=${'btn ' + (danger ? 'btn-danger' : 'btn-primary')}
+							ref=${(el) => el && el.focus()} onClick=${onOk}>${okLabel || 'OK'}</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-backdrop fade in" onClick=${onCancel}></div>
+	</div>`;
+}
+
+const Notices = ({ items }) => html`<div class="md-notices">
+	${items.map((n) => html`<div key=${n.id} class="alert alert-info">${n.msg}</div>`)}
+</div>`;
+
 function App() {
 	const [view, setView] = useState(initialView);
 	const [status, setStatus] = useState(null);
 	const [data, setData] = useState(null);
 	const [tick, setTick] = useState(0);
 	const busyRef = useRef(false);
+
+	// Themed replacements for window.confirm / window.alert.
+	const [confirmState, setConfirmState] = useState(null); // { msg, danger, ok, resolve }
+	const [notices, setNotices] = useState([]);
+	const confirm = useCallback((msg, opts) => new Promise((resolve) => {
+		setConfirmState({ msg, danger: !!(opts && opts.danger), ok: opts && opts.ok, resolve });
+	}), []);
+	const resolveConfirm = (result) => setConfirmState((c) => { if (c) c.resolve(result); return null; });
+	const notify = useCallback((msg) => {
+		const id = Math.random().toString(36).slice(2);
+		setNotices((n) => n.concat({ id, msg }));
+		setTimeout(() => setNotices((n) => n.filter((x) => x.id !== id)), 3200);
+	}, []);
 
 	const cycle = useCallback(async (force) => {
 		if (busyRef.current || (document.hidden && !force)) return;
@@ -1059,9 +1106,9 @@ function App() {
 	}, []);
 
 	const guard = useCallback(() => {
-		if (status && status.guest) { alert('You logged in as guest - commands are disabled'); return false; }
+		if (status && status.guest) { notify('You logged in as guest - commands are disabled'); return false; }
 		return true;
-	}, [status]);
+	}, [status, notify]);
 	const refresh = useCallback(() => cycle(true), [cycle]);
 	const go = (id) => {
 		if (id !== view) {
@@ -1070,7 +1117,7 @@ function App() {
 		}
 	};
 
-	const vp = { data, status, guard, refresh, tick };
+	const vp = { data, status, guard, refresh, tick, confirm };
 	let body;
 	if (view === 'download') body = html`<${DownloadView} ...${vp} />`;
 	else if (view === 'shared') body = html`<${SharedView} ...${vp} />`;
@@ -1079,13 +1126,16 @@ function App() {
 	else if (view === 'kad') body = html`<${KadView} ...${vp} />`;
 	else if (view === 'stats') body = html`<${StatsView} tick=${tick} />`;
 	else if (view === 'prefs') body = html`<${PrefsView} status=${status} guard=${guard} />`;
-	else if (view === 'log') body = html`<${LogView} />`;
+	else if (view === 'log') body = html`<${LogView} confirm=${confirm} />`;
 
 	return html`
 	<div>
 		<${Nav} go=${go} />
 		${body}
 		<${Footer} status=${status} guard=${guard} />
+		${confirmState ? html`<${ConfirmDialog} msg=${confirmState.msg} danger=${confirmState.danger} okLabel=${confirmState.ok}
+			onCancel=${() => resolveConfirm(false)} onOk=${() => resolveConfirm(true)} />` : ''}
+		<${Notices} items=${notices} />
 	</div>`;
 }
 
