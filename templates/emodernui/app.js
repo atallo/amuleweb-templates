@@ -285,7 +285,7 @@ function Ed2kModal({ status, guard, close }) {
 /* TRANSFER (transfer.html)                                             */
 /* ==================================================================== */
 
-function TransferView({ data, status, guard, refresh }) {
+function TransferView({ data, status, guard, refresh, confirm }) {
 	const sel = useSel();
 	const sort = useSort('', 1);
 	const cats = (status && status.categories) || [];
@@ -305,9 +305,9 @@ function TransferView({ data, status, guard, refresh }) {
 		size: a.size + Number(f.size), done: a.done + Number(f.size_done), speed: a.speed + Number(f.speed),
 	}), { size: 0, done: 0, speed: 0 });
 
-	const cmd = (c) => {
+	const cmd = async (c) => {
 		if (!guard()) return;
-		if (c === 'cancel' && !confirm('Cancel the selected downloads?')) return;
+		if (c === 'cancel' && !(await confirm('Cancel the selected downloads?', { danger: true, ok: 'Cancel downloads' }))) return;
 		const list = sel.list();
 		if (!list.length) return;
 		apiPost('dload_cmd', { cmd: c, hashes: list.join(',') }).then(refresh).catch(() => {});
@@ -882,7 +882,7 @@ function PrefsView({ status, guard }) {
 /* LOG / SERVERINFO (the Web Options dropdown entries)                  */
 /* ==================================================================== */
 
-function TextView({ route, title }) {
+function TextView({ route, title, confirm }) {
 	const [txt, setTxt] = useState('');
 	const load = useCallback((reset) => apiText(route, reset ? { reset: 1 } : {}).then(setTxt).catch(() => {}), [route]);
 	useEffect(() => { load(); }, [load]);
@@ -890,7 +890,7 @@ function TextView({ route, title }) {
 	<div class="container">
 		<div class="top-buffer">
 			<${Panel} title=${html`${title} ${' '}<a href="#" class="reset-link"
-				onClick=${(e) => { e.preventDefault(); if (confirm('Reset ' + title + '?')) load(1); }}>(reset)</a>`}>
+				onClick=${async (e) => { e.preventDefault(); if (await confirm('Reset ' + title + '?', { danger: true, ok: 'Reset' })) load(1); }}>(reset)</a>`}>
 				<pre class="logpre">${txt || ' '}</pre>
 			<//>
 		</div>
@@ -910,6 +910,40 @@ const initialView = () => {
 	return VIEWS.indexOf(h) >= 0 ? h : 'transfer';
 };
 
+// Themed confirmation dialog (a Bootstrap 3 modal like Ed2kModal, shown
+// without the Bootstrap JS) and notices, replacing window.confirm/alert.
+function ConfirmDialog({ msg, danger, okLabel, onCancel, onOk }) {
+	useEffect(() => {
+		const onKey = (e) => { if (e.key === 'Escape') onCancel(); else if (e.key === 'Enter') onOk(); };
+		document.addEventListener('keydown', onKey);
+		return () => document.removeEventListener('keydown', onKey);
+	}, [onCancel, onOk]);
+	return html`
+	<div>
+		<div class="modal fade in" style="display:block" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" onClick=${onCancel}>${'×'}</button>
+						<h4 class="modal-title">aMule</h4>
+					</div>
+					<div class="modal-body">${msg}</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" onClick=${onCancel}>Cancel</button>
+						<button type="button" class=${'btn ' + (danger ? 'btn-danger' : 'btn-primary')}
+							ref=${(el) => el && el.focus()} onClick=${onOk}>${okLabel || 'OK'}</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-backdrop fade in" onClick=${onCancel}></div>
+	</div>`;
+}
+
+const Notices = ({ items }) => html`<div class="md-notices">
+	${items.map((n) => html`<div key=${n.id} class="alert alert-info">${n.msg}</div>`)}
+</div>`;
+
 function App() {
 	const [view, setView] = useState(initialView);
 	const [status, setStatus] = useState(null);
@@ -917,6 +951,19 @@ function App() {
 	const [tick, setTick] = useState(0);
 	const [ed2kOpen, setEd2kOpen] = useState(false);
 	const busyRef = useRef(false);
+
+	// Themed replacements for window.confirm / window.alert.
+	const [confirmState, setConfirmState] = useState(null); // { msg, danger, ok, resolve }
+	const [notices, setNotices] = useState([]);
+	const confirm = useCallback((msg, opts) => new Promise((resolve) => {
+		setConfirmState({ msg, danger: !!(opts && opts.danger), ok: opts && opts.ok, resolve });
+	}), []);
+	const resolveConfirm = (result) => setConfirmState((c) => { if (c) c.resolve(result); return null; });
+	const notify = useCallback((msg) => {
+		const id = Math.random().toString(36).slice(2);
+		setNotices((n) => n.concat({ id, msg }));
+		setTimeout(() => setNotices((n) => n.filter((x) => x.id !== id)), 3200);
+	}, []);
 
 	const cycle = useCallback(async (force) => {
 		if (busyRef.current || (document.hidden && !force)) return;
@@ -948,9 +995,9 @@ function App() {
 	}, []);
 
 	const guard = useCallback(() => {
-		if (status && status.guest) { alert('You logged in as guest - commands are disabled'); return false; }
+		if (status && status.guest) { notify('You logged in as guest - commands are disabled'); return false; }
 		return true;
-	}, [status]);
+	}, [status, notify]);
 	const refresh = useCallback(() => cycle(true), [cycle]);
 	const go = (id) => {
 		if (id !== view) {
@@ -959,7 +1006,7 @@ function App() {
 		}
 	};
 
-	const vp = { data, status, guard, refresh, tick };
+	const vp = { data, status, guard, refresh, tick, confirm };
 	let body;
 	if (view === 'transfer') body = html`<${TransferView} ...${vp} />`;
 	else if (view === 'server') body = html`<${ServerView} ...${vp} />`;
@@ -969,8 +1016,8 @@ function App() {
 	else if (view === 'stats') body = html`<${StatsView} tick=${tick} />`;
 	else if (view === 'graphs') body = html`<${GraphsView} tick=${tick} />`;
 	else if (view === 'prefs') body = html`<${PrefsView} status=${status} guard=${guard} />`;
-	else if (view === 'log') body = html`<${TextView} route="log" title="Log" />`;
-	else if (view === 'sinfo') body = html`<${TextView} route="serverinfo" title="ServerInfo" />`;
+	else if (view === 'log') body = html`<${TextView} route="log" title="Log" confirm=${confirm} />`;
+	else if (view === 'sinfo') body = html`<${TextView} route="serverinfo" title="ServerInfo" confirm=${confirm} />`;
 
 	return html`
 	<div>
@@ -978,6 +1025,9 @@ function App() {
 		<${StatusRows} status=${status} />
 		<main role="main">${body}</main>
 		${ed2kOpen ? html`<${Ed2kModal} status=${status} guard=${guard} close=${() => setEd2kOpen(false)} />` : ''}
+		${confirmState ? html`<${ConfirmDialog} msg=${confirmState.msg} danger=${confirmState.danger} okLabel=${confirmState.ok}
+			onCancel=${() => resolveConfirm(false)} onOk=${() => resolveConfirm(true)} />` : ''}
+		<${Notices} items=${notices} />
 	</div>`;
 }
 
